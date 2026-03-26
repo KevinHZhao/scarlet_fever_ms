@@ -1,0 +1,62 @@
+## SPECIFY EQUATIONS (cf. Ermentrout 2002, p.250)
+s' = sp
+i' = ip
+sp = 0
+ip = 0.001
+
+## LINK TO THE C-LIBRARY
+## We pass the values {s0, i0, R0, alpha, gamma, mu}
+## and ask the C-library function to return {sp, ip}.
+## The order of export must agree with the order of
+## the in[] and out[] arrays in the C function.
+## export {s, i, alpha, p, R0, gamma, mu} {sp, ip}
+export {s, i, R0, alpha, gamma, mu, p} {sp, ip}
+## Specify the name of the shared object library, and
+## the name of the function within it that we need.
+@ dll_lib=SIRmap_PD.so dll_fun=SIRmap
+
+## SET INITIAL CONDITIONS for one point on each
+## periodic orbit of interest.
+## For historical reasons, s and i below actually
+## refer to log10(s) and log10(i).
+
+## PARAMETER VALUES
+## R0 = basic reproduction number
+## alpha = amplitude of seasonal forcing
+## gamma = recovery rate; 1/gamma = mean infectious period
+## mu = birth and death rates; 1/mu = mean lifetime
+par alpha=0.09, p=0, R0=18.7283284843893, gamma=24.33, mu=0.02
+aux a=alpha
+
+## XPP SETUP
+## this is a discrete map not an ODE
+@ meth=discrete
+## total=20 means 20 iterations of the map in total
+@ total=1000, yp=i
+## line type = dots
+@ lt=0
+## plotting options
+@ xlo=-1, xhi=21, ylo=-9, yhi=-1
+
+## AUTO PLOT SETTINGS
+## set range for R0, our control parameter:
+@ parmin=0, parmax=1
+## set range of vertical axis variable and which
+## variable it is (note that i refers to log10(i)).
+@ autoymin=-9,autoymax=-1,autovar=i
+## set horizontal axis plot range:
+@ autoxmin=0, autoxmax=1
+
+## set step size for continuation of the control parameter:
+## (ds=standard step size, others are max and min step size)
+## (the sign of ds controls the direction of continuation)
+@ ds=0.000055, dsmin=0.00003, dsmax=0.005
+## set a few other technical aspects of the continuation:
+## Nmax = maximum number of steps to take along a branch
+## before stopping
+## Npr = number of steps before labelling a point
+## (which can help with continuing from points
+## without having to start from scratch)
+## eps... = various tolerances
+@ Nmax=20000, Npr=2000, epsl=1e-6, epsu=1e-6, sepss=1e-4
+done

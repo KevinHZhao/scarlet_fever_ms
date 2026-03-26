@@ -1,0 +1,44 @@
+---
+title: "Model Description"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+In macpan, I am fitting the model:
+
+\[\frac{{\rm d}S}{{\rm d}t} = B - \beta \frac{SI}{N} - D \frac{S}{N}, \label{eq:SIRmacS}\]
+\[\frac{{\rm d}I}{{\rm d}t} = \beta \frac{SI}{N} - \gamma I - D \frac{I}{N}, \label{eq:SIRmacI}\]
+\[\frac{{\rm d}R}{{\rm d}t} = (1 - \texttt{\upshape CFP}) \cdot \gamma \cdot I - D \frac{R}{N}, \label{eq:SIRmacR}\]
+\[\frac{{\rm d}M}{{\rm d}t} = \gamma \cdot \texttt{\upshape CFP} \cdot I. \label{eq:SIRmacM} \]
+
+Where...
+
+* $S$, $I$, and $R$ are typical susceptible, infected and recovered for scarlet fever
+* $M$ for scarlet fever mortality
+* $t$ is in weeks
+* $B$ is weekly births (known weekly time series)
+* $N$ is weekly population (known weekly time series)
+* $D$ is weekly number of individuals removed from the population, found by taking $N - (S + I + R)$ at the beginning of each time step, in order to force the model's population to match $N$.
+* $\gamma^{-1}$ is the mean generation interval, set to $15/7$ weeks (mean latent period + mean infectious period, where mean latent = 1 day and mean infectious = 2 weeks)
+* $\beta$ is time-varying transmission rate, which is being fit
+* $\texttt{\upshape CFP}$ is time-varying case-fatality proportion, which I modelled as a logistic curve over time that macpan also fits.
+
+I have a known weekly scarlet fever mortality time series, which I fit the time series $M(t) - M(t-1)$ (the model's weekly mortality) to.
+
+I attempt to fit $\beta$ with the equivalent model in fastbeta with the script Betas.R, where I am providing:
+
+* The known weekly time series for $B$, $N$, and scarlet fever deaths
+* $\gamma$
+* The macpan fitted values for:
+  * $D$, to get $\mu = D/N$ for fastbeta
+  * Initial values of $S, I, R$
+  * $\texttt{\upshape CFP}$
+
+But comparing the resulting R0's I get in the below figure, we can see that the trend for $\beta$ becomes different after about 1000 weeks (bottom plot is weekly scarlet fever mortality).
+The yearly peaks and troughs of the oscillations do seem to match up well though, and I they match up even better when I modify the `span` argument for my loess smoothing of the fastbeta output (not shown).
+
+\includegraphics[width = \textwidth]{"betas.pdf"}
+
+My guess as to why the plots become different might be due to the way I used CFP to infer incidence from mortality is incorrect/not equivalent to my macpan model (lines 62--70 of Betas.R).
+If you spot any errors in what I'm doing in fastbeta, I'd also be grateful if you could let me know.

@@ -1,0 +1,80 @@
+## SPECIFY EQUATIONS (cf. Ermentrout 2002, p.250)
+s' = sp
+i' = ip
+sp = 0
+ip = 0.001
+
+## LINK TO THE C-LIBRARY
+## We pass the values {s0, i0, R0, alpha, gamma, mu}
+## and ask the C-library function to return {sp, ip}.
+## The order of export must agree with the order of
+## the in[] and out[] arrays in the C function.
+export {s, i, R0, alpha, gamma, mu, p} {sp, ip}
+## Specify the name of the shared object library, and
+## the name of the function within it that we need.
+@ dll_lib=SIRmap_PD.so dll_fun=SIRmap
+
+## SET INITIAL CONDITIONS for one point on each
+## periodic orbit of interest.
+## For historical reasons, s and i below actually
+## refer to log10(s) and log10(i).
+
+# set p1 {init s=-0.96341801, init i=-3.3198051, R0=9.1199999, p=0, alpha=0.01, nout=1}
+# set p2 {init s=-1.4587274, init i=-3.6397161, R0=23.219999, p=0, alpha=0.01, nout=2}
+# set p3 {init s=-1.1188016, init i=-4.7095146, R0=13.15, p=0, alpha=0.01, nout=3}
+# set p4 {init s=-1.0333261, init i=-5.302248, R0=9.8800001, p=0, alpha=0.01, nout=4}
+# set p5 {init s=-0.79325986, init i=-3.3717945, R0=7.6999998, p=0, alpha=0.01, nout=5}
+# set p6 {init s=-0.69611472, init i=-5.033637, R0=5.6700001, p=0, alpha=0.01, nout=6}
+# set p7 {init s=-0.80062312, init i=-8.4940653, R0=6.3899999, p=0, alpha=0.01, nout=7}
+# set p8 {init s=-0.74833268, init i=-3.1219392, R0=4.3499999, p=0, alpha=0.01, nout=8}
+set ps1 {init s=-0.91690809, init i=-3.1629634, R0=8.3500004, p=1, alpha=0.118617923883414, nout=1}
+set ps2 {init s=-1.3043774, init i=-2.6941497, R0=23.559999, p=1, alpha=0.118617923883414, nout=2}
+set ps3 {init s=-1.0883691, init i=-4.4231319, R0=13.43, p=1, alpha=0.118617923883414, nout=3}
+set ps4 {init s=-0.92079192, init i=-4.5386095, R0=9.6099997, p=1, alpha=0.118617923883414, nout=4}
+set ps5 {init s=-0.75577539, init i=-4.1462421, R0=6.5700002, p=1, alpha=0.118617923883414, nout=5}
+set ps6 {init s=-0.8289355, init i=-2.0872514, R0=7.5100002, p=1, alpha=0.118617923883414, nout=6}
+set ps7 {init s=-0.78451926, init i=-3.9066036, R0=4.8800001, p=1, alpha=0.118617923883414, nout=7}
+set ps8 {init s=-0.75303066, init i=-1.9185516, R0=5.9099998, p=1, alpha=0.118617923883414, nout=8}
+
+## PARAMETER VALUES
+## R0 = basic reproduction number
+## alpha = amplitude of seasonal forcing
+## gamma = recovery rate; 1/gamma = mean infectious period
+## mu = birth and death rates; 1/mu = mean lifetime
+par R0=7, alpha=0.1, gamma=24.33, mu=0.02, p=0
+aux Rzero=R0
+
+## XPP SETUP
+## this is a discrete map not an ODE
+@ meth=discrete
+## total=20 means 20 iterations of the map in total
+@ total=600, yp=i
+## line type = dots
+@ lt=0
+## plotting options
+@ xlo=-1, xhi=61, ylo=-9, yhi=-1
+
+## AUTO PLOT SETTINGS
+## set range for R0, our control parameter:
+@ parmin=1, parmax=40
+## set range of vertical axis variable and which
+## variable it is (note that i refers to log10(i)).
+@ autoymin=-12,autoymax=-1,autovar=i
+## set horizontal axis plot range:
+@ autoxmin=1, autoxmax=31
+
+## set step size for continuation of the control parameter:
+## (ds=standard step size, others are max and min step size)
+## (the sign of ds controls the direction of continuation)
+## @ ds=0.003, dsmin=0.0000003, dsmax=0.1
+@ dsmax=0.005, ds=0.0000003, dsmin=0.000000003
+## @ dsmax=0.001, ds=0.003, dsmin=0.0000003
+## set a few other technical aspects of the continuation:
+## Nmax = maximum number of steps to take along a branch
+## before stopping
+## Npr = number of steps before labelling a point
+## (which can help with continuing from points
+## without having to start from scratch)
+## eps... = various tolerances
+@ Nmax=10000, Npr=2000, epsl=1e-8, epsu=1e-8, epss=1e-8
+done
