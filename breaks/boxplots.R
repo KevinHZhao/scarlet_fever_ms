@@ -34,7 +34,7 @@ sin_coeffs_mat <- params %>% filter(mat == "sin_coeffs_mat") %>% pull(current) %
 cos_coeffs_mat <- params %>% filter(mat == "cos_coeffs_mat") %>% pull(current) %>% matrix(nrow = numyears)
 b0 <- params %>% filter(mat == "b0") %>% pull(current)
 
-beta_trend <- b0 + X[(front_pad+1):(steps + front_pad),] %*% c
+beta_trend <- exp(b0 + X[(front_pad+1):(steps + front_pad),] %*% c)
 
 sin_weights_mat <- X[(front_pad+1):(steps + front_pad),] %*% sin_coeffs_mat
 cos_weights_mat <- X[(front_pad+1):(steps + front_pad),] %*% cos_coeffs_mat
