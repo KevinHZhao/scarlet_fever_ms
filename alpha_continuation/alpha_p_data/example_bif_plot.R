@@ -2,7 +2,7 @@ library(tidyverse); theme_set(theme_bw())
 
 bif_dat <- list()
 
-for (i in 1:7){
+for (i in 1:8){
   bif_dat <- append(bif_dat, list(read.table(paste0("alpha_p_",i,".dat"))[,1:2]))
 }
 

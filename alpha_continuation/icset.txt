@@ -1,0 +1,15 @@
+
+set p1 {init s=-0.96495467, init i=-3.3025472, R0=9.1700001, p=0, alpha=0.1, nout=1}
+set p2 {init s=-1.2920518, init i=-3.6816285, R0=22.799999, p=0, alpha=0.1, nout=2}
+set p3 {init s=-1.1117599, init i=-4.6290755, R0=12.96, p=0, alpha=0.1, nout=3}
+set p4 {init s=-0.89176935, init i=-3.3967717, R0=9.54, p=0, alpha=0.1, nout=4}
+set p5 {init s=-0.89742982, init i=-5.0950422, R0=6.9899998, p=0, alpha=0.1, nout=5}
+set p6 {init s=-0.90697062, init i=-3.2721622, R0=6.1100001, p=0, alpha=0.1, nout=6}
+set p7 {init s=-0.80476832, init i=-5.4933505, R0=5.3099999, p=0, alpha=0.1, nout=7}
+set p1 {init s=-0.98096168, init i=-3.156507, R0=9.4499998, p=1, alpha=0.109846455301455, nout=1}
+set p2 {init s=-1.4625441, init i=-3.2546358, R0=22.809999, p=1, alpha=0.109846455301455, nout=2}
+set p3 {init s=-1.0364552, init i=-3.5374928, R0=12.79, p=1, alpha=0.109846455301455, nout=3}
+set p4 {init s=-1.0366237, init i=-5.0149136, R0=9.7799997, p=1, alpha=0.109846455301455, nout=4}
+set p5 {init s=-1.0233934, init i=-2.9944215, R0=7.7600002, p=1, alpha=0.109846455301455, nout=5}
+set p6 {init s=-0.88159472, init i=-5.2419171, R0=6.3400002, p=1, alpha=0.109846455301455, nout=6}
+set p7 {init s=-1.2523834, init i=-3.1808913, R0=17.690001, p=1, alpha=0.109846455301455, nout=7}

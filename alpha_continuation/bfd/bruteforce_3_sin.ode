@@ -10,7 +10,7 @@ c1=0
 c2=0
 c3=0
 
-par mu=0.02, gamma=24.33, Rzero=7, amp=0.0916106286525974
+par mu=0.02, gamma=24.33, Rzero=7, amp=0.0916095127813505, phase=0.731643947017079
 
 # MACPAN forcing
 
@@ -18,7 +18,7 @@ macpan(t)=s1*sin(2*pi*t)+s2*sin(4*pi*t)+s3*sin(6*pi*t)+c1*cos(2*pi*t)+c2*cos(4*p
 
 # SINUSOIDAL forcing
 
-sinusoid(t)=cos(2*pi*t)
+sinusoid(t)=cos(2*pi*(t-phase))
 
 # MACPAN to SINUSOIDAL
 

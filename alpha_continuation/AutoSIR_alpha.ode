@@ -25,7 +25,7 @@ export {s, i, R0, alpha, gamma, mu, p} {sp, ip}
 ## alpha = amplitude of seasonal forcing
 ## gamma = recovery rate; 1/gamma = mean infectious period
 ## mu = birth and death rates; 1/mu = mean lifetime
-par alpha=0.09, p=0, R0=18.7283284843893, gamma=24.33, mu=0.02
+par alpha=0.09, p=0, R0=18.51763488514496, gamma=24.33, mu=0.02
 aux a=alpha
 
 ## XPP SETUP

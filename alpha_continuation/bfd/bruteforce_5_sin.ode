@@ -1,0 +1,61 @@
+## For the Forcing Function
+# p determines shape of forcing function
+# where p = 0 is macpan, p = 1 is sinusoidal
+par p=1
+
+s1=0
+s2=0
+s3=0
+c1=0
+c2=0
+c3=0
+
+par mu=0.02, gamma=24.33, Rzero=7, amp=0.100532122244489, phase=0.576941610514705
+
+# MACPAN forcing
+
+macpan(t)=s1*sin(2*pi*t)+s2*sin(4*pi*t)+s3*sin(6*pi*t)+c1*cos(2*pi*t)+c2*cos(4*pi*t)+c3*cos(6*pi*t)
+
+# SINUSOIDAL forcing
+
+sinusoid(t)=cos(2*pi*(t-phase))
+
+# MACPAN to SINUSOIDAL
+
+transform(t,p)=(1-p)*macpan(t)+p*sinusoid(t)
+
+beta0=Rzero*(gamma+mu)
+beta=beta0*(1+amp*transform(t,p))
+
+s'=mu-beta*s*i-mu*s
+i'=beta*s*i-(gamma+mu)*i
+
+## INITIAL CONDITIONS:
+init S=0.9, I=0.001
+## AUXILIARY VARIABLES:
+aux R0=Rzero
+aux log10s=log10(s)
+aux log10i=log10(i)
+
+## PLOT OPTIONS:
+@ xp=R0, yp=log10i
+@ xlo=0, xhi=40, yhi=0, ylo=-25
+@ back=white
+
+## POINCARE MAP SET UP:
+@ poimap=section,poivar=t,poipln=1
+
+## range set up
+@ range=1, rangeover=Rzero, rangestep=3000
+@ rangelow=0, rangehigh=30, rangereset=no
+
+## INTEGRATION OPTIONS:
+@ total=650,
+@ trans=600
+@ dt=0.001
+
+## STORAGE and DATA SAVING OPTIONS
+@ maxstor=2000000
+@ output=bruteforce_5_sin.dat
+done
+

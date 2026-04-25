@@ -34,7 +34,7 @@ sin_coeffs_mat <- params %>% filter(mat == "sin_coeffs_mat") %>% pull(current) %
 cos_coeffs_mat <- params %>% filter(mat == "cos_coeffs_mat") %>% pull(current) %>% matrix(nrow = numyears)
 b0 <- params %>% filter(mat == "b0") %>% pull(current)
 
-beta_trend <- b0 + X[(front_pad+1):(steps + front_pad),] %*% c
+beta_trend <- exp(b0 + X[(front_pad+1):(steps + front_pad),] %*% c)
 
 sin_weights_mat <- X[(front_pad+1):(steps + front_pad),] %*% sin_coeffs_mat
 cos_weights_mat <- X[(front_pad+1):(steps + front_pad),] %*% cos_coeffs_mat
@@ -84,6 +84,7 @@ file.create("avg_beta_parms.txt")
 pdf("boxplots.pdf", width = 14)
 sin_means <- matrix(ncol = (length(breaks)-1), nrow = 3)
 cos_means <- matrix(ncol = (length(breaks)-1), nrow = 3)
+phases <- c()
 
 monthSeq <- seq.Date(from = as.Date("0000-01-01"),
                      to = as.Date("0001-01-01"),
@@ -126,10 +127,20 @@ for (i in 1:(length(breaks) - 1)) {
   sin_means[,i] <- sin_weights_mat_mean
   cos_means[,i] <- cos_weights_mat_mean
 
+  abs_macpan_function <- function(t){
+    abs(
+      sin_weights_mat_mean %*% sapply(X = c(2*pi*t, 4*pi*t, 6*pi*t), FUN = sin) +
+        cos_weights_mat_mean %*% sapply(X = c(2*pi*t, 4*pi*t, 6*pi*t), FUN = cos)
+      )
+  }
+  phase = optimize(f = abs_macpan_function, interval = c(0, 1), maximum = TRUE)$maximum
+  phases <- c(phases, phase)
+
   write(paste("Segment ", i, ":\n" ,
-              "b0=", beta_trend_mean, "\n",
-              "s1=", sin_weights_mat_mean[[1]], "\ns2=", sin_weights_mat_mean[[2]], "\ns3=", sin_weights_mat_mean[[3]],
-              "\nc1=", cos_weights_mat_mean[[1]], "\nc2=", cos_weights_mat_mean[[2]], "\nc3=", cos_weights_mat_mean[[3]],
+              "b0=", beta_trend_mean, ";\n",
+              "s1=", sin_weights_mat_mean[[1]], ";\ns2=", sin_weights_mat_mean[[2]], ";\ns3=", sin_weights_mat_mean[[3]],
+              ";\nc1=", cos_weights_mat_mean[[1]], ";\nc2=", cos_weights_mat_mean[[2]], ";\nc3=", cos_weights_mat_mean[[3]],
+              ";\nphase=", phase, ";",
               sep = ""),
         file = "avg_beta_parms.txt",
         sep="\n",
@@ -263,4 +274,4 @@ for (i in 1:(length(breaks) - 1)) {
 
 dev.off()
 
-saveRDS(object = list(sin_means = sin_means, cos_means = cos_means), file = "avg_beta_parms.Rds")
+saveRDS(object = list(sin_means = sin_means, cos_means = cos_means, phases = phases), file = "avg_beta_parms.Rds")

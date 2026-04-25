@@ -14,10 +14,13 @@
 
 8.  Edit `AutoSIR_alpha.ode` so that in the parameter values, R0 is set to the value of $R_0$ we found earlier. I would assume it shouldn't be necessary to use two distinct .ode files, but when I tried doing the steps below for $\alpha$ continuation after finding the PD bifurcation in the same AUTO window, they didn't work.
 9.  Run `AutoSIR_alpha.ode` with XPPAUT.
-10. The value of $\alpha$ was purposely set to $0.09$ instead of $0.1$, which is the value used in finding the PD bifurcation. This is so that we can use XPPAUT to converge to a period 1 attractor (I -\> G, then I -\> L several times until the Data window has repeating rows), then run AUTO (F -\> A), and Run (R) until we pass $\alpha = 0.1$, where there should be a bifurcation that we can Grab (G, click, Enter).
+10. The value of $\alpha$ was purposely set to $0.09$ instead of $0.1$, which is the value used in finding the PD bifurcation. This is so that we can use XPPAUT to converge to a period 1 attractor (I -\> G, then I -\> L several times until the Data window has repeating rows), then run AUTO (F -\> A), and Run (R) until we pass $\alpha = 0.1$, where there should be a bifurcation that we can Grab (G, click, Enter).  If anything fails, redo this step with a smaller ds, dsmin, and dsmax (or EPSL, EPSU, EPSS) in the Numerics (N) menu in AUTO.
 11. With this $\alpha$ grabbed, go into two par plot mode (A -\> T), set Main Parm: `p`, Secnd Parm: `alpha`, Xmin: `0`, Ymin: `0`, Xmax: `1`, Ymax `1`, then Ok.
 12. Run (R), and the $\alpha$ continuation should be plotted.
 13. Write the pts (F -\> W). Unfortunately, I couldn't find any obvious ways of finding $\alpha$ when $p = 1$ in the plot from AUTO, so I simply interpolated from the written points (in R).
+
+Sometimes, this continuation won't work, producing something that looks like `strangebehaviour_Segment_4.png`, I think this is when the transition from macpan forcing to sine forcing can't just be a linear interpolation (in the extreme case, think negative cosine forcing to cosine forcing at $p = 0.5$, then obviously the PD bifurcation wouldn't exist so there is no way to track it from $p = 0$ to $p = 1$), that means we need a nicer way of setting up this $p$ transition.
+[Desmos plot of problematic forcing function](https://www.desmos.com/calculator/1ogesam7cx)
 
 # Generate macpan/sin brute force data
 

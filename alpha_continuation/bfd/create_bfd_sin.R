@@ -2,9 +2,11 @@
 
 # read file
 alphas <- read.csv("../alpha_p_data/alphas.csv")$x
+phases <- readRDS("../../breaks/avg_beta_parms.Rds")$phases[1:8]
+## Only segments 1 to 8 have interesting attractors
 
 # template function
-make_ode <- function(params, i) {
+make_ode <- function(alpha, phase, i) {
   sprintf(
     "## For the Forcing Function
 # p determines shape of forcing function
@@ -18,7 +20,7 @@ c1=0
 c2=0
 c3=0
 
-par mu=0.02, gamma=24.33, Rzero=7, amp=%s
+par mu=0.02, gamma=24.33, Rzero=7, amp=%s, phase=%s
 
 # MACPAN forcing
 
@@ -26,7 +28,7 @@ macpan(t)=s1*sin(2*pi*t)+s2*sin(4*pi*t)+s3*sin(6*pi*t)+c1*cos(2*pi*t)+c2*cos(4*p
 
 # SINUSOIDAL forcing
 
-sinusoid(t)=cos(2*pi*t)
+sinusoid(t)=cos(2*pi*(t-phase))
 
 # MACPAN to SINUSOIDAL
 
@@ -67,13 +69,14 @@ aux log10i=log10(i)
 @ output=bruteforce_%d_sin.dat
 done
 ",
-    params,
+    alpha,
+    phase,
     i
   )
 }
 
 # loop through segments
 for (i in 1:length(alphas)) {
-  ode_text <- make_ode(alphas[i], i)
+  ode_text <- make_ode(alphas[i], phases[i], i)
   writeLines(ode_text, sprintf("bruteforce_%d_sin.ode", i))
 }

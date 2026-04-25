@@ -1,4 +1,4 @@
-for i in $(seq 1 3);
+for i in $(seq 1 11);
 do
     xppaut -silent bruteforce_${i}.ode &
 done

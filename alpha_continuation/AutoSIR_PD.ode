@@ -19,22 +19,22 @@ export {s, i, R0, alpha, gamma, mu, p} {sp, ip}
 ## For historical reasons, s and i below actually
 ## refer to log10(s) and log10(i).
 
-# set p1 {init s=-0.96341801, init i=-3.3198051, R0=9.1199999, p=0, alpha=0.01, nout=1}
-# set p2 {init s=-1.4587274, init i=-3.6397161, R0=23.219999, p=0, alpha=0.01, nout=2}
-# set p3 {init s=-1.1188016, init i=-4.7095146, R0=13.15, p=0, alpha=0.01, nout=3}
-# set p4 {init s=-1.0333261, init i=-5.302248, R0=9.8800001, p=0, alpha=0.01, nout=4}
-# set p5 {init s=-0.79325986, init i=-3.3717945, R0=7.6999998, p=0, alpha=0.01, nout=5}
-# set p6 {init s=-0.69611472, init i=-5.033637, R0=5.6700001, p=0, alpha=0.01, nout=6}
-# set p7 {init s=-0.80062312, init i=-8.4940653, R0=6.3899999, p=0, alpha=0.01, nout=7}
-# set p8 {init s=-0.74833268, init i=-3.1219392, R0=4.3499999, p=0, alpha=0.01, nout=8}
-set ps1 {init s=-0.91690809, init i=-3.1629634, R0=8.3500004, p=1, alpha=0.118617923883414, nout=1}
-set ps2 {init s=-1.3043774, init i=-2.6941497, R0=23.559999, p=1, alpha=0.118617923883414, nout=2}
-set ps3 {init s=-1.0883691, init i=-4.4231319, R0=13.43, p=1, alpha=0.118617923883414, nout=3}
-set ps4 {init s=-0.92079192, init i=-4.5386095, R0=9.6099997, p=1, alpha=0.118617923883414, nout=4}
-set ps5 {init s=-0.75577539, init i=-4.1462421, R0=6.5700002, p=1, alpha=0.118617923883414, nout=5}
-set ps6 {init s=-0.8289355, init i=-2.0872514, R0=7.5100002, p=1, alpha=0.118617923883414, nout=6}
-set ps7 {init s=-0.78451926, init i=-3.9066036, R0=4.8800001, p=1, alpha=0.118617923883414, nout=7}
-set ps8 {init s=-0.75303066, init i=-1.9185516, R0=5.9099998, p=1, alpha=0.118617923883414, nout=8}
+## PASTE icset.txt CONTENTS BELOW
+set p1 {init s=-0.96495467, init i=-3.3025472, R0=9.1700001, p=0, alpha=0.1, nout=1, phase=0.506174260007292}
+set p2 {init s=-1.2920518, init i=-3.6816285, R0=22.799999, p=0, alpha=0.1, nout=2, phase=0.506174260007292}
+set p3 {init s=-1.1117599, init i=-4.6290755, R0=12.96, p=0, alpha=0.1, nout=3, phase=0.506174260007292}
+set p4 {init s=-0.89176935, init i=-3.3967717, R0=9.54, p=0, alpha=0.1, nout=4, phase=0.506174260007292}
+set p5 {init s=-0.89742982, init i=-5.0950422, R0=6.9899998, p=0, alpha=0.1, nout=5, phase=0.506174260007292}
+set p6 {init s=-0.90697062, init i=-3.2721622, R0=6.1100001, p=0, alpha=0.1, nout=6, phase=0.506174260007292}
+set p7 {init s=-0.80476832, init i=-5.4933505, R0=5.3099999, p=0, alpha=0.1, nout=7, phase=0.506174260007292}
+set p1 {init s=-0.98096168, init i=-3.156507, R0=9.4499998, p=1, alpha=0.109846455301455, nout=1, phase=0.506174260007292}
+set p2 {init s=-1.4625441, init i=-3.2546358, R0=22.809999, p=1, alpha=0.109846455301455, nout=2, phase=0.506174260007292}
+set p3 {init s=-1.0364552, init i=-3.5374928, R0=12.79, p=1, alpha=0.109846455301455, nout=3, phase=0.506174260007292}
+set p4 {init s=-1.0366237, init i=-5.0149136, R0=9.7799997, p=1, alpha=0.109846455301455, nout=4, phase=0.506174260007292}
+set p5 {init s=-1.0233934, init i=-2.9944215, R0=7.7600002, p=1, alpha=0.109846455301455, nout=5, phase=0.506174260007292}
+set p6 {init s=-0.88159472, init i=-5.2419171, R0=6.3400002, p=1, alpha=0.109846455301455, nout=6, phase=0.506174260007292}
+set p7 {init s=-1.2523834, init i=-3.1808913, R0=17.690001, p=1, alpha=0.109846455301455, nout=7, phase=0.506174260007292}
+
 
 ## PARAMETER VALUES
 ## R0 = basic reproduction number
