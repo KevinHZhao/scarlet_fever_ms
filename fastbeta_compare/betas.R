@@ -1,5 +1,6 @@
 library(tidyverse)
 library(fastbeta)
+library(tikzDevice)
 
 # Set up ------------------------------------------------------------------
 
