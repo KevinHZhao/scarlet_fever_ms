@@ -34,7 +34,7 @@ sundays <- seq(from = 0, to = steps, by = 1) ## Weekly time step, USING 0:steps 
 CFP_max = c(0.5, 1, 2) * 0.025
 CFP_min = c(0.5, 1, 2) * 0.01
 CFP_rate = c(0.5, 1, 2) * 0.01
-CFP_mid = c(0.5, 1, 2) * steps/2
+CFP_mid = c(0.9, 1, 1.1) * steps/2
 CFP_parms <- expand_grid(CFP_max, CFP_min, CFP_rate, CFP_mid)
 
 numrbf <- 64
@@ -253,9 +253,9 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid){
 all_res <- mclapply(
   split(CFP_parms, seq_len(nrow(CFP_parms))),
   function(row) {
-    simulator_fun(row$CFP_min, row$CFP_max, row$CFP_rate, row$CFP_mid)
+    simulator_fun(row$CFP_max, row$CFP_min, row$CFP_rate, row$CFP_mid)
   },
-  mc.cores = 10
+  mc.cores = 81
 )
 
 saveRDS(all_res, file = "output_sensitivity/all_res.RDS")
