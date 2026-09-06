@@ -1,175 +1,198 @@
 library(tidyverse)
 library(deSolve)
 library(parallel)
-library(doParallel)
+library(shiny)
 
-# amps <- c(0.025,0.05,0.095, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
-# ampdata_names <- c("SF_SIR_R0_a025.dat",
-#                    "SF_SIR_R0_a05.dat",
-#                    "SF_SIR_R0_a095.dat",
-#                    "SF_SIR_R0_a2.dat",
-#                    "SF_SIR_R0_a3.dat",
-#                    "SF_SIR_R0_a4.dat",
-#                    "SF_SIR_R0_a5.dat",
-#                    "SF_SIR_R0_a6.dat",
-#                    "SF_SIR_R0_a7.dat",
-#                    "SF_SIR_R0_a8.dat",
-#                    "SF_SIR_R0_a9.dat",
-#                    "SF_SIR_R0_a10.dat")
-# 
-# bfdlist <- lapply(ampdata_names,read.table,
-#                   col.names=c("time","S","I","R0","log10S","log10I"))
-# names(bfdlist) <- amps
+# ====Asymptotic sim====
 
-# SIR <- function(t, state, parameters) {
-#   with(as.list(c(state,parameters)), {
-#     beta <- R0 * (gam + mu) * (1+a*cos(2*pi*t))
-#     dS <- mu - beta*S*I - mu*S
-#     dI = beta*S*I - (gam + mu)*I
-#     
-#     return(list(c(dS,dI)))
-#   })
-# }
-times <- seq(0,1000, by = 0.001)
+times <- seq(0, 1000, by = 0.001) # Simulate 1000 years of ODE with 0.001 year step size
 
-n.cores <- detectCores() - 2
-my.cluster <- makeCluster(
-  n.cores, 
-  type = "PSOCK"
-)
-registerDoParallel(cl = my.cluster)
+n.cores <- detectCores() - 2 # use two less than number of cores on this device
 
-nR0 <- 10
-namp <- 10
-ninit <- 10
+nR0 <- 10 # number of diff R_0 to simulate across
+namp <- 10 # number of diff alphas to simulate across
+possible_gammas <- 365.25/(10:25) # simulate across 10 to 25 day recovery periods
 
-# paramlist <- expand.grid(R0 = seq(1, 30, length.out = nR0), 
-#                          a = seq (0, 1, length.out = namp)) %>%
-#   mutate(mu = 0.0231, gam = 24.37) %>%
-#   relocate(gam) %>%
-#   relocate(mu) %>%
-#   t() %>%
-#   as.vector() %>%
-#   split(sort(rep_len(1:(nR0*namp), nR0*namp*4)))
-# 
-# clusterEvalQ(my.cluster, {
-#   library(tidyverse)
-#   library(deSolve)
-#   dyn.load("SIRfun.dll")
-# })
+mu = 0.02
+
+# make sure you have SIRfun.so compiled on mac (on windows I think should be SIRfun.dll?)
+dyn.load(paste("SIRfun", .Platform$dynlib.ext, sep = ""))
+grid <- expand.grid(i = seq(1.6, 31.6, length.out = nR0), j = seq(1/namp, 1, length.out = namp), k = possible_gammas)
 
 startT <- Sys.time()
-bfdtest <-
-  # parLapply(my.cluster, 
-  #           X = paramlist, 
-  #           fun = ode, 
-  #           y = state, 
-  #           times = times, 
-  #           func = "SIRmap", 
-  #           dllname = "SIRfun", 
-  #           initfunc = "initmod") %>%
-  # filter(time %in% 1950:2000)
-  foreach(i = seq(1, 30, length.out = nR0), .combine = "rbind") %:%
-    foreach(j = seq(0, 1, length.out = namp), .combine = "rbind") %:%
-      foreach(k = seq(0.08, 0.12, length.out = ninit), .packages=c("tidyverse", "deSolve"), .combine = "rbind") %dopar% {
-        dyn.load(paste("SIRfun", .Platform$dynlib.ext, sep = ""))
-        
-        state <- c(S = k,
-                   I = 0.001)
-        
-        parameters <- c(mu = 0.0231,
-                        gam = 24.37,
-                        R0 = i,
-                        a = j)
-        return(as.data.frame(ode(y = state, times = times, func = "SIRmap", parms = parameters, dllname="SIRfun", initfunc = "initmod")) %>%
-                       filter(time %in% 950:1000) %>%
-                       mutate(R0 = i, a = j)
+bfd <-
+  mcmapply(
+    FUN = function(i, j, k) { # i = R0, j = amp, k = gamma
+      state <- c(S = 1/i,
+                 I = 0.0002) # start close to the attractor for the SIR model without forcing
+
+      parameters <- c(mu = mu,
+                      gam = k,
+                      R0 = i,
+                      a = j)
+
+      return(as.data.frame(ode(y = state, times = times, func = "SIRmap", parms = parameters, dllname="SIRfun", initfunc = "initmod")) %>%
+                     filter(time %in% 950:1000) %>%
+                     mutate(R0 = i, a = j, gam = k)
              )
-      }
-stopCluster(cl = my.cluster)
-endT <- Sys.time()
-print(endT - startT)
-## With times from 0 to 1000, step size 0.001, using foreach loop
-## Took roughly 3 minutes for 9 different r0 & a values, vs 47 seconds for 10 diff a values, r0 constant using multiprocessing (10 cores)
-## 18.75 minutes for 300 simulations in pure R w/ multiprocessing, 25 seconds for 300 simulations using C dll!?!?!
-## 1.13 hours for 30,000 simulations with time from 0 to 2000, step size still 0.001
-## 2.134 mins using parLapply for 0 to 2000 with step size 0.001 vs 44.67 seconds using foreach loops, same 0 to 2k steps.
-## 1.1646 mins for 1000 sims from 0 to 1000 with step 0.001
-
-head(bfd)
-
-maxper <- 8
-
-last.point.with.period <- function(df, dop=4,
-                                   R0lim=5, max.period=maxper) {
-  n.cores <- detectCores() - 2
-  my.cluster <- makeCluster(
-    n.cores, 
-    type = "PSOCK"
+    },
+    i = grid$i,
+    j = grid$j,
+    k = grid$k,
+    SIMPLIFY=FALSE,
+    mc.cores = n.cores
   )
-  registerDoParallel(cl = my.cluster)
-  ## list of data frames grouped by amplitude and R0 value
-  dfR0alist <- df %>% mutate(index=rep(1:3630000,each=51)) %>% group_split(index)
-  dfper <- 
-    foreach(df.R0a = dfR0alist, .combine = "rbind", .packages = c("tidyverse")) %dopar% {
-      ## compute period of this solution:
-      period <- length(unique(round(log(df.R0a$I),dop)))
-      df.R0a$period <- ifelse(period > max.period, NA, period)
-      return(tail(df.R0a, n = 1))
-    }
-  stopCluster(cl = my.cluster)
-  return(dfper)
+endT <- Sys.time()
+print(paste0("Attractor sim took ", round(as.numeric(endT - startT, units = "secs"), digits = 3), " seconds"))
+
+maxper <- 10
+
+startT <- Sys.time()
+bfd.last <- mclapply(
+  X = bfd,
+  FUN = function(x){
+    dop <- 4 # decimals of precision
+    period <- length(unique(round(log(x$I), dop)))
+    x$period <- ifelse(period > maxper, NA, period)
+    return(last(x))
+  },
+  mc.cores = n.cores
+) %>%
+  bind_rows()
+endT <- Sys.time()
+print(paste0("Attractor period calculation from sim results took ", round(as.numeric(endT - startT, units = "secs"), digits = 3), " seconds"))
+
+# ====Transient sim====
+
+SIRCsim <- function(run.time, iState, delt = 1e-3, prms){
+  return(as.data.frame(ode(y = iState,
+                           times = seq(0, run.time, delt),
+                           func = "SIRmap",
+                           parms = prms,
+                           dllname="SIRfun",
+                           initfunc = "initmod")
+  ) %>%
+    tail(n = 1) %>%
+    select(-time) %>%
+    unlist(., use.names=FALSE)
+  )
 }
 
-startT <- Sys.time()
-bfd.last <- last.point.with.period(df = bfd)
-endT <- Sys.time()
-print(endT - startT)
-## 17.5 mins for 300*100 simulation data frame by calling the old function on the vector,
-## 14.9 seconds for same data frame using parallelization and a few optimizations with 10 cores.
+transP <- function(S,I,per,gam,R0,a,hach=1e-6,rad=1e-5,nsmp=10,trn.tol=1e-4){
+  angseq <- seq(0,by=2*pi/nsmp,length=nsmp)
 
-# foreach(i = seq(1, 30, length.out = nR0), .combine = "rbind") %:%
-#   foreach(j = seq(0, 1, length.out = namp), .combine = "rbind", .packages = c("tidyverse")) %dopar% {
-#     ## data frame with all pts on soln with given R0 and a:
-#     df.R0aij <- df %>% filter(R0 == i, a == j)
-#     ## compute period of this solution:
-#     period <- length(unique(round(log(df.R0aij$I),dop)))
-#     if (period > max.period) period <- NA
-#     df.last[which(df.last$R0 == i & df.last$a == j),]$period <- period
-#     return(df.last[which(df.last$R0 == i & df.last$a == j),])
-#   }
+  fun <- function(vec){
+    return(SIRCsim(run.time=1,iState=vec,delt=1e-3,prms=c(mu = mu, gam = gam, R0 = R0, a = a)))
+  }
 
-# old.last.point.with.period <- function(df, dop=4,
-#                                    R0lim=5, max.period=maxper) {
-#   ## data frame with only the last pt on each soln:
-#   df.last <- df %>% filter(time == max(time))
-#   nR0 <- nrow(df.last %>% filter(a == 0)) # number of R0 values
-#   namp <- nrow(df.last %>% filter(R0 == 4)) # number of amp values
-#   df.last$period <- 0 # add period column
-#   for (i in unique(df$R0)) {
-#     for(j in unique(df$a)){
-#       ## data frame with all pts on soln with given R0 and a:
-#       df.R0aij <- df %>% filter(R0 == i, a == j)
-#       ## compute period of this solution:
-#       period <- length(unique(round(log(df.R0aij$I),dop)))
-#       if (period > max.period) period <- NA
-#       # }
-#       df.last[which(df.last$R0 == i & df.last$a == j),]$period <- period
-#     }
-#   }
-#   return(df.last)
-# }
+  trnp <- numeric(0)
+  for(i in angseq){
+    ini <- c(S,I)+c(rad*cos(i),rad*sin(i))
+    dFdS<-fun(ini+c(hach,0))-fun(ini)
+    dFdI<-fun(ini+c(0,hach))-fun(ini)
+    A <- matrix(c(dFdS,dFdI),nrow=2,ncol=2,byrow=FALSE)
+    eigs <- eigen(A)$values
+    if(Arg(eigs[1]) != 0){
+      trnp <- c(trnp,2*pi*per/Arg(eigs[1]))
+    }
+    if(Re(eigs[1])>0 | Re(eigs[2])>0){
+    }
+    if(Arg(eigs[1]) == 0){
+      trnp <- c(trnp,0)
+    }
+  }
+  # if(mean(trnp)!=0){
+  #   if(var(trnp)/mean(trnp)>=trn.tol){
+  #     return(NA)
+  #   }
+  return(c(avgtrans = mean(trnp), vartrans = var(trnp)))
+  # }
+  # if(mean(trnp)==0){
+  #   return(NA)
+  # }
+}
 
-save(bfd, bfd.last, file = "Sims.RData")
+start_time <- Sys.time()
+per1 <- bfd.last %>% filter(period == 1)
+per1 <-
+  per1 %>%
+  cbind(
+    mcmapply(
+      FUN = transP,
+      S = .$S,
+      I = .$I,
+      per = .$period,
+      gam = .$gam,
+      R0 = .$R0,
+      a = .$a
+    ) %>%
+    t()
+  )
+end_time <- Sys.time()
 
-# Careful with wrapped ICs
-# Ask stephen lee about sharcnet and how he got it sorted out
-# ask mark han if there are any question
-# Earn compute canada code:
-# Compute Canada Identifier (CCI) might be digital alliance identifier
-# ijp-293
-# Active Roles (-01 since Earn is PI)
-# ijp-293-01
-# Try using different number of years for converge
-# email earn on tuesday 14th asking about meeting
-# Try running one of the sims on my own end to see if it matches
+end_time - start_time
+
+start_time <- Sys.time()
+per2 <- bfd.last %>% filter(period == 2)
+per2 <-
+  per2 %>%
+  cbind(
+    mcmapply(
+      FUN = transP,
+      S = .$S,
+      I = .$I,
+      per = .$period,
+      gam = .$gam,
+      R0 = .$R0,
+      a = .$a
+    ) %>%
+      t()
+  )
+end_time <- Sys.time()
+
+print(paste0("Transient period calculation from sim results took ", round(as.numeric(end_time - start_time, units = "secs"), digits = 3), " seconds"))
+
+# ====shiny app to display the different plots====
+
+values <- sort(unique(possible_gammas))
+ui <- fluidPage(
+  radioButtons(
+    "status",
+    "Select:",
+    choices = setNames(values, round(values, 2)),
+    inline = TRUE
+  ),
+
+  radioButtons(
+    inputId = "plot_type",
+    label = NULL,
+    choices = c("Plot A", "Plot B"),
+    selected = "Plot A"
+  ),
+
+  plotOutput("plot")
+)
+
+server <- function(input, output) {
+  output$plot <- renderPlot({
+
+    if (input$plot_type == "Plot A") {
+
+    bfd.last %>%
+      mutate(period = factor(period)) %>%
+      filter(!is.na(period), gam == input$status) %>%
+      ggplot() +
+      geom_point(aes(x = R0, y = a, col = period)) +
+      ylim(0, 1)
+
+    } else {
+      per1 %>%
+        filter(vartrans < 1e-2, gam == input$status) %>%
+        ggplot() +
+        geom_point(aes(x = R0, y = a, col = avgtrans)) +
+        ylim(0, 1)
+    }
+  })
+}
+
+shinyApp(ui, server)

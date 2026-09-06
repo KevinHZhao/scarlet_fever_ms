@@ -17,18 +17,33 @@ source("tmb.R")
 wkyear <- 365.25/7
 load("SF.RData")
 
-births <- read.csv("birthrate_1750_1930.csv")
+## Read scans of RGWR cases from chatgpt, the date column is the END date of the week,
+## to make it consistent I subtract seven days from the year column
+## Assuming cases represents number of NEW infecteds each week
+RGWR_cases <- read.csv("RGWR_London_scarlet_fever_1901-1954.csv") %>%
+  mutate(date = ymd(date) - days(7))
+
+## Test consistency between the deaths from gpt scans and from digitized scans after interpolating missing:
+## full_series %>% filter(!is.na(deaths), deaths != interpolated.deaths) %>% View()
 
 full_series <- normalized_scarlet_fever_data %>%
   mutate(birth.trend = approx(x = births$numdate, y = births$birth.trend, xout = numdate)$y,
-         pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y) %>%
-  filter(numdate > 1842.01, numdate < 1930) %>%
-  select(numdate, interpolated.deaths, birth.trend, acm_trend, pop)
+         pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y,
+         date = ymd(date)) %>%
+  filter(numdate > 1842.01) %>%
+  select(numdate, date, interpolated.deaths, birth.trend, acm_trend, pop) %>%
+  left_join(RGWR_cases, by = "date") %>%
+  mutate(cases = approx(x = numdate, y = cases, xout = numdate)$y) # missing two weeks of case data in 1939, interpolating it
 
-front_pad <- 479
-end_pad <- 5*52
+front_pad <- 479 # Based on visually making early mortality padding look right
+end_pad <- 508 # Based on visually making late cases look right
+## plots to check these look good:
+## plot(c(head(full_series$interpolated.deaths, n = front_pad), full_series$interpolated.deaths), type = "l"); lines(head(full_series$interpolated.deaths, n = front_pad), col = "red")
+## plot(c(RGWR_cases$cases, tail(RGWR_cases$cases, n = end_pad)), type = "l"); lines(x = 1:end_pad + length(RGWR_cases$cases), tail(RGWR_cases$cases, n = end_pad), col = "red")
 steps <- nrow(full_series) + front_pad + end_pad
 sundays <- seq(from = 0, to = steps, by = 1) ## Weekly time step, USING 0:steps CAUSES A BOMB...
+
+first_case_data <- which(!is.na(full_series$cases))[[1]] + front_pad # which time step we will have first case data
 
 numrbf <- 64
 terms <- 3
@@ -53,7 +68,7 @@ simulator <-
               rep(full_series$pop[nrow(full_series)], end_pad)
               )
     , N = N0)
-    , must_save = c("state", "total_inflow", "beta", "CFP")
+    , must_save = c("state", "total_inflow", "beta", "CFP", "infection")
   ) %>%
   mp_tmb_insert(
     phase = "before",
@@ -81,7 +96,8 @@ simulator <-
       beta_trend = rep(NA_real_, steps),
       SINE_MAT = SINE_MAT,
       COSINE_MAT = COSINE_MAT,
-      steps = steps
+      steps = steps,
+      first_case_data = first_case_data
     )
   ) %>%
   mp_tmb_insert(
@@ -90,11 +106,13 @@ simulator <-
     , expressions = list(
       weekly ~ rbind_time(D, sundays, 0)
       , weekly ~ block(weekly, 1, 0, n, 1) - block(weekly, 0, 0, n, 1)
+      , infects ~ rbind_time(infection, 1:steps, first_case_data + 1)
+      # , infects ~ block(infects, first_case_data, 0, steps - first_case_data - 1, 1)
     )
     , integers = nlist(sundays, n = length(sundays) - 1)
     ) %>%
   mp_rk4() %>%
-  mp_simulator(time_steps = steps, outputs = c("S", "I", "R", "D", "N", "model_pop", "mu_S", "mu_I", "mu_R", "weekly", "infection"))
+  mp_simulator(time_steps = steps, outputs = c("S", "I", "R", "D", "N", "model_pop", "mu_S", "mu_I", "mu_R", "weekly", "infection", "infects"))
 
 simulator$add$matrices(
   Sp = 1/6.5
@@ -105,6 +123,7 @@ simulator$add$matrices(
   , CFP_mid = steps/2
   , .mats_to_return = c("Si", "Ii", "beta_trend")
   , log_disp = 1
+  , log_disp_cases = 1
 )
 simulator$insert$expressions(
   S ~ Sp * N,
@@ -123,9 +142,13 @@ simulator$add$matrices(
   D_obs = c(full_series$interpolated.deaths[1:front_pad],
             full_series$interpolated.deaths,
             tail(full_series$interpolated.deaths, n = end_pad)),
+  cases_obs = na.omit(c(
+            full_series$cases,
+            tail(RGWR_cases$cases, n = end_pad)
+            )),
   log_lik = empty_matrix,
-  .mats_to_save = c("weekly", "log_lik"),
-  .mats_to_return = c("D_obs", "weekly", "log_lik")
+  .mats_to_save = c("weekly", "log_lik", "infection"),
+  .mats_to_return = c("D_obs", "cases_obs", "weekly", "log_lik", "infection")
 )
 ## param for std of incidence and penalty params for RBF coeffs (std on a Gaussian random eff)
 simulator$add$matrices(
@@ -140,6 +163,13 @@ simulator$insert$expressions(
         D_obs,  ## observed values
         clamp(weekly), ## Round up to avoid zeros, IS THERE A BETTER WAY? Try clamping
         exp(log_disp)
+      )
+    ) +
+    sum(
+      dnbinom(
+        cases_obs,
+        clamp(infects),
+        exp(log_disp_cases)
       )
     ) +
     sum(
@@ -180,6 +210,7 @@ simulator$replace$params(
     qlogis(0.01),
     qlogis(0.025),
     1,
+    1,
     log(steps/2),
     log(0.01), ## Set initial value of CFP logistic curve rate parameter to 0.01
     0,
@@ -193,6 +224,7 @@ simulator$replace$params(
     "logit_CFP_min",
     "logit_CFP_max",
     "log_disp",
+    "log_disp_cases",
     "log_CFP_mid",
     "log_CFP_rate",
     "b0",
@@ -202,11 +234,11 @@ simulator$replace$params(
     rep("cos_coeffs_mat", terms * numrbf),
     rep("sin_coeffs_mat", terms * numrbf)
     ),
-  col = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  col = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
           rep(0, numrbf),
           rep(0:(terms-1), each = numrbf),
           rep(0:(terms-1), each = numrbf)),
-  row = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  row = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
           0:(numrbf-1),
           rep(0:(numrbf-1), terms),
           rep(0:(numrbf-1), terms))

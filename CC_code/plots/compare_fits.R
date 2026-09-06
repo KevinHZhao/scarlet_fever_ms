@@ -1,5 +1,6 @@
 library(tidyverse)
 library(fastbeta)
+library(parallel)
 
 # Set up ------------------------------------------------------------------
 
@@ -78,6 +79,16 @@ full_df <- mclapply(
     week = 1:(pad_steps)
   )
 
+all_res <- readRDS("../output_sensitivity/all_res.RDS")
+objfns <- lapply(all_res, function(x) {x$objective}) |> unlist() |> round(3)
+diffbetas <- which(objfns != objfns[[41]])
+## 7,8,9 are the 3 identical fits, 36 39 and 42 are the unique ones.
+## 7,8,9 have halved CFP_max and CFP_min but doubled CFP_rate, independent of CFP_mid
+## 36 has halved CFP_min, doubled CFP_rate and 10% later CFP_mid
+## 39 has halved CFP_rate and 10% later CFP_mid
+## 42 has just 10% later CFP_mid
+## doesn't seem to have any major patterns in this unique fits, could just be due to not strict enough fitting.
+
 lapply(all_res, FUN = function(x) {x$objective}) |> unlist() |> table()
 pdf("compare_fits.pdf")
 matplot(full_df %>% select(-x, -week), type = "l", lty = 1, col = 1:ncol(full_df), ylab = "beta", xlab = "week number")
@@ -85,3 +96,6 @@ dev.off()
 ## 5 different plots of beta produced, of which out of the 81 diff param combos
 ## for which 3 only had one respective param combo, one had two combos, and the
 ## last had 75 (including the one we used, #41).
+## figure out which parms led to which curves
+## mention that we reached the most minimal objective function
+## can check if we can maek the optimizer more strict

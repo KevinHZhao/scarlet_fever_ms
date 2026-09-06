@@ -1,5 +1,4 @@
 #include <math.h>
-#include <R.h>
 /***Compile-time definitions***/
 #define Time_step 0.0005 /*in units of years*/
 #define TWO_PI 6.283185307179586476925286766559012
