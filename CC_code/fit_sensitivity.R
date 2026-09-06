@@ -1,5 +1,6 @@
 library(macpan2)
 library(tidyverse)
+library(parallel)
 options(
   macpan2_tmb_adfun_args = list(
     inner.control = list(maxit = 100000)
