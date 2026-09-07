@@ -24,7 +24,7 @@ auto.colnames <- c(
   "ev2.im" # imaginary part of second eigenvalue
 )
 
-period.set <- c(2, 1, 3:7) # make it so period 1 covers period 2 overlap
+period.set <- c(2, 1, 3:8) # make it so period 1 covers period 2 overlap
 
 colrs = c("red",
           "black",
@@ -32,7 +32,8 @@ colrs = c("red",
           "blue",
           "cyan",
           "purple",
-          "yellow")
+          "yellow",
+          "orange")
 
 macpan.allinfo.auto.data <- lapply(period.set,
                                    function(iper)

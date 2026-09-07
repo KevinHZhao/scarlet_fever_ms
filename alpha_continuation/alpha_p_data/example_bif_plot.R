@@ -2,11 +2,14 @@ library(tidyverse); theme_set(theme_bw())
 
 bif_dat <- list()
 
-for (i in 1:8){
-  bif_dat <- append(bif_dat, list(read.table(paste0("alpha_p_",i,".dat"))[,1:2]))
+indices <- c(1:9, 12, 13)
+for (i in indices){
+  bif_dat[[i]] <- read.table(paste0("alpha_p_",i,".dat"))[,1:2]
 }
 
-alphas <- sapply(X = bif_dat, function(df) approx(x = df[,1], y = df[,2], xout = 1)$y)
+alphas <-
+  sapply(X = indices, function(i) c(index = i, alpha = approx(x = bif_dat[[i]][,1], y = bif_dat[[i]][,2], xout = 1)$y)) %>%
+  t()
 write.csv(alphas, file = "alphas.csv")
 
 ggplot(bif_dat[[1]]) +

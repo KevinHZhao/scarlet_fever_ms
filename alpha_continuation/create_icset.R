@@ -1,13 +1,14 @@
 library(tidyverse)
 
 segment <- 7
-breaks <- c(1842, read.csv("../breaks/breaks.csv", header = FALSE, comment.char = "#")$V1, 1930)
-alpha <- read.csv("alpha_p_data/alphas.csv")$x[segment]
+breaks <- c(1842, read.csv("../breaks/breaks.csv", header = FALSE, comment.char = "#")$V1, 1939)
+alpha <- read.csv("alpha_p_data/alphas.csv")$alpha[segment]
+indices <- read.csv("alpha_p_data/alphas.csv")$index
 
 bfd <- list()
 bfd_sin <- list()
 
-for (i in 1:8){
+for (i in indices){
   bfd <- append(
     bfd, list(
       read.table(paste("bfd/bruteforce_", i, ".dat", sep = ""),

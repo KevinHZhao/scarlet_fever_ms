@@ -108,7 +108,7 @@ full_per2 <- bfd %>%
 # transient_no_na1 <- full_per1 %>% filter(!is.na(transient))
 # transient_no_na2 <- full_per2 %>% filter(!is.na(transient))
 
-saveRDS(full_per1, "Transient1.rds")
-saveRDS(full_per2, "Transient2.rds")
+saveRDS(full_per1, "Transients/Transient1.rds")
+saveRDS(full_per2, "Transients/Transient2.rds")
 # write.csv(transient_no_na1, "Transient_no_na1.csv")
 # write.csv(transient_no_na2, "Transient_no_na2.csv")

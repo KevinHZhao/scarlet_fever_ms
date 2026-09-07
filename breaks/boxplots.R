@@ -12,17 +12,15 @@ results <- read.csv("../CC_code/output/Results.csv")
 params <- read.csv("../CC_code/output/Params.csv")
 final <- read.csv("../CC_code/output/Final.csv")
 
-births <- read.csv("../CC_code/birthrate_1750_1930.csv")
 full_series <- normalized_scarlet_fever_data %>%
   mutate(birth.trend = approx(x = births$numdate, y = births$birth.trend, xout = numdate)$y,
-         pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y,
-         inner.pop = approx(x = births$numdate, y = births$inner.pop, xout = numdate)$y) %>%
-  filter(numdate > 1842.01, numdate < 1930) %>%
-  select(numdate, interpolated.deaths, birth.trend, acm_trend, pop, inner.pop)
+         pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y) %>%
+  filter(numdate > 1842.01) %>%
+  select(numdate, interpolated.deaths, birth.trend, acm_trend, pop)
 
 steps <- nrow(full_series)
 front_pad <- 479
-end_pad <- 5*52
+end_pad <- 508
 pad_steps <- steps + front_pad + end_pad
 numyears <- 64
 terms <- 3
@@ -39,7 +37,7 @@ beta_trend <- exp(b0 + X[(front_pad+1):(steps + front_pad),] %*% c)
 sin_weights_mat <- X[(front_pad+1):(steps + front_pad),] %*% sin_coeffs_mat
 cos_weights_mat <- X[(front_pad+1):(steps + front_pad),] %*% cos_coeffs_mat
 
-breaks <- c(1842, read.csv("breaks.csv", header = FALSE, comment.char = "#")$V1, 1930)
+breaks <- c(1842, read.csv("breaks.csv", header = FALSE, comment.char = "#")$V1, 1939)
 
 # emd_sin_weights <- apply(sin_weights_mat, MARGIN = 2, FUN = function(x) emd(x, boundary = "wave")$residue)
 # emd_cos_weights <- apply(cos_weights_mat, MARGIN = 2, FUN = function(x) emd(x, boundary = "wave")$residue)

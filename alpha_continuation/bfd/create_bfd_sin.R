@@ -1,9 +1,10 @@
 ## this script was made with chatgpt assistance
 
 # read file
-alphas <- read.csv("../alpha_p_data/alphas.csv")$x
-phases <- readRDS("../../breaks/avg_beta_parms.Rds")$phases[1:8]
-## Only segments 1 to 8 have interesting attractors
+alphas <- read.csv("../alpha_p_data/alphas.csv")$alpha
+indices <- read.csv("../alpha_p_data/alphas.csv")$index
+phases <- readRDS("../../breaks/avg_beta_parms.Rds")$phases[indices]
+# indices represents segments with interesting dynamics (a PD bif)
 
 # template function
 make_ode <- function(alpha, phase, i) {
@@ -71,12 +72,12 @@ done
 ",
     alpha,
     phase,
-    i
+    indices[[i]]
   )
 }
 
 # loop through segments
 for (i in 1:length(alphas)) {
   ode_text <- make_ode(alphas[i], phases[i], i)
-  writeLines(ode_text, sprintf("bruteforce_%d_sin.ode", i))
+  writeLines(ode_text, sprintf("bruteforce_%d_sin.ode", indices[[i]]))
 }

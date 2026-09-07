@@ -10,7 +10,7 @@ c1=0
 c2=0
 c3=0
 
-par mu=0.02, gamma=24.33, Rzero=7, amp=0.0683589209125475, phase=0.528321113831112
+par mu=0.02, gamma=24.33, Rzero=7, amp=0.0674762126774645, phase=0.525133470780461
 
 # MACPAN forcing
 

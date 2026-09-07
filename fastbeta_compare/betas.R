@@ -6,18 +6,22 @@ library(tikzDevice)
 
 load(file = "../CC_code/SF.RData")
 source("helper_funs/utils.R")
-births <- read.csv("../CC_code/birthrate_1750_1930.csv")
 wkyear <- 365.25/7
+RGWR_cases <- read.csv("../CC_code/RGWR_London_scarlet_fever_1901-1954.csv") %>%
+  mutate(date = ymd(date) - days(7))
 
 full_series <- normalized_scarlet_fever_data %>%
   mutate(birth.trend = approx(x = births$numdate, y = births$birth.trend, xout = numdate)$y,
-         pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y) %>%
-  filter(numdate > 1842.01, numdate < 1930) %>%
-  select(numdate, interpolated.deaths, birth.trend, acm_trend, pop)
+         pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y,
+         date = ymd(date)) %>%
+  filter(numdate > 1842.01) %>%
+  select(numdate, date, interpolated.deaths, birth.trend, acm_trend, pop) %>%
+  left_join(RGWR_cases, by = "date") %>%
+  mutate(cases = approx(x = numdate, y = cases, xout = numdate)$y) # missing two weeks of case data in 1939, interpolating it
 
 steps <- nrow(full_series) # Steps in SF series
 front_pad <- 479 # SF deaths to repeat at beginning
-end_pad <- 5*52 # SF deaths to repeat at end
+end_pad <- 508 # SF deaths to repeat at end
 pad_steps <- steps + front_pad + end_pad # Steps in the final model
 numrbf <- 64
 
@@ -56,34 +60,59 @@ N <- mac_results %>% filter(matrix == "model_pop") %>% pull(value) # Population,
 mac_infection <- mac_results %>% filter(matrix == "infection") %>% pull(value)
 # fastbeta setup ----------------------------------------------------------
 
-series <-
+first_case_data <- which(!is.na(full_series$cases))[[1]] + front_pad # which time step we will have first case data
+
+series_mort <-
   cbind(
-    D.obs = full_series$interpolated.deaths[c(1:front_pad, 1:nrow(full_series), nrow(full_series) - end_pad + 1:end_pad)],
+    D.obs = full_series$interpolated.deaths[c(1:front_pad, 1:(first_case_data - 1 - front_pad))],
     #Z = mac_infection,
-    B = full_series$birth.trend[c(rep(1, front_pad), 1:nrow(full_series), rep(nrow(full_series), end_pad))],
-    mu = mac_outflows / N
+    B = full_series$birth.trend[c(1:front_pad, 1:(first_case_data - 1 - front_pad))],
+    mu = (mac_outflows / N)[1:(first_case_data - 1)]
   ) %>%
   ts()
 
-betas <- fastbeta(series,
+series_case <-
+  cbind(
+    case.obs = full_series$cases[c((first_case_data - front_pad):nrow(full_series), nrow(full_series) - end_pad + 1:end_pad)],
+    #Z = mac_infection,
+    B = full_series$birth.trend[c((first_case_data - front_pad):nrow(full_series), nrow(full_series) - end_pad + 1:end_pad)],
+    mu = (mac_outflows / N)[first_case_data:pad_steps]
+  ) %>%
+  ts()
+
+betas_mort <- fastbeta(series_mort,
                   gamma = gamma,
                   init = c(round(S0_mac),
                            round(I0_mac),
                            round(R0_mac)),
-                  prob = CFP,
+                  prob = CFP[1:(first_case_data + 7)],
                   m = 0L,
                   delay = diff(pexp(0L:(8L + 1L), 7/15))
                  )
 
+S0_mac_case <- mac_results %>% filter(time == first_case_data - 1, matrix == "S") %>% pull(value)
+I0_mac_case <- mac_results %>% filter(time == first_case_data - 1, matrix == "I") %>% pull(value)
+R0_mac_case <- mac_results %>% filter(time == first_case_data - 1, matrix == "R") %>% pull(value)
+
+betas_case <- fastbeta(series_case,
+                       gamma = gamma,
+                       init = c(round(S0_mac_case),
+                                round(I0_mac_case),
+                                round(R0_mac_case)),
+                       m = 0L
+)
+
+betas <- rbind(betas_mort, betas_case) # should be able to just merge the two?
+betas[first_case_data-1, "beta"] <- mean(beta[first_case_data-2, "beta"], beta[first_case_data, "beta"]) # interpolate this one missing beta
+
 SI_loess <- stats::loess(
   formula = beta ~ c(1:pad_steps),
-  data = betas,
-  span = 35/pad_steps,
+  data = data.frame(betas),
+  span = 52/pad_steps,
   degree = 2,
   na.action = "na.exclude",
   control = loess.control(surface = "direct")
 )
-
 
 # Comparison of fastbeta and macpan R0's ----------------------------------
 
@@ -138,5 +167,6 @@ df %>%
         axis.title=element_text(size=15),
         legend.key = element_blank(),
         legend.background = element_blank(),
-        legend.position = c(.9,.85))
+        legend.position = c(.9,.85)) +
+  geom_vline(xintercept = first_case_data)
 dev.off()

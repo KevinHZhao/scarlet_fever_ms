@@ -16,7 +16,7 @@ parse_segment <- function(seg_lines) {
 
   # split into named vector
   parts <- strsplit(vals, "=")
-  out <- sapply(parts, function(x) as.numeric(x[2]))
+  out <- sapply(parts, function(x) as.numeric(substring(x[2], 1, nchar(x[2]) - 1))) # remove semicolon at end
   names(out) <- sapply(parts, function(x) x[1])
 
   return(out)
@@ -101,3 +101,4 @@ for (i in seq_len(length(seg_idx) - 1)) {
 
   writeLines(ode_text, sprintf("bruteforce_%d.ode", i))
 }
+

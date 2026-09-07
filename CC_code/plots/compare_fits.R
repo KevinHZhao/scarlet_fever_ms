@@ -6,18 +6,17 @@ library(parallel)
 
 load(file = "../SF.RData")
 source("helper_funs/utils.R")
-births <- read.csv("../birthrate_1750_1930.csv")
 wkyear <- 365.25/7
 
 full_series <- normalized_scarlet_fever_data %>%
   mutate(birth.trend = approx(x = births$numdate, y = births$birth.trend, xout = numdate)$y,
          pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y) %>%
-  filter(numdate > 1842.01, numdate < 1930) %>%
+  filter(numdate > 1842.01) %>%
   select(numdate, interpolated.deaths, birth.trend, acm_trend, pop)
 
 steps <- nrow(full_series) # Steps in SF series
 front_pad <- 479 # SF deaths to repeat at beginning
-end_pad <- 5*52 # SF deaths to repeat at end
+end_pad <- 508 # SF deaths to repeat at end
 pad_steps <- steps + front_pad + end_pad # Steps in the final model
 numrbf <- 64
 
@@ -99,3 +98,5 @@ dev.off()
 ## figure out which parms led to which curves
 ## mention that we reached the most minimal objective function
 ## can check if we can maek the optimizer more strict
+
+## with cases, ALL SAME FIT!
