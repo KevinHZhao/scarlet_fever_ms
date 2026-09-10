@@ -9,8 +9,7 @@ for (i in 1:10){
     bind_rows(readRDS(paste("bfd/sim_trajectory_", i, ".rds", sep = "")))
 }
 yrly_traj <- yrly_traj %>%
-  select(-time) %>%
-  left_join(simTrajectory, by = c(R0 = "R0", a = "amp")) %>%
+  left_join(simTrajectory, by = c(t = "t", R0 = "R0", a = "amp")) %>%
   relocate(t) %>%
   left_join(traj_trans1 %>%
               distinct(S, I, R0, a, avgtrans, vartrans) %>%

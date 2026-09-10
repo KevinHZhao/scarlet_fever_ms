@@ -90,9 +90,9 @@ betas_mort <- fastbeta(series_mort,
                   delay = diff(pexp(0L:(8L + 1L), 7/15))
                  )
 
-S0_mac_case <- mac_results %>% filter(time == first_case_data - 1, matrix == "S") %>% pull(value)
-I0_mac_case <- mac_results %>% filter(time == first_case_data - 1, matrix == "I") %>% pull(value)
-R0_mac_case <- mac_results %>% filter(time == first_case_data - 1, matrix == "R") %>% pull(value)
+S0_mac_case <- betas_mort[nrow(betas_mort), "S"]
+I0_mac_case <- betas_mort[nrow(betas_mort), "I"]
+R0_mac_case <- betas_mort[nrow(betas_mort), "R"]
 
 betas_case <- fastbeta(series_case,
                        gamma = gamma,
@@ -103,7 +103,7 @@ betas_case <- fastbeta(series_case,
 )
 
 betas <- rbind(betas_mort, betas_case) # should be able to just merge the two?
-betas[first_case_data-1, "beta"] <- mean(beta[first_case_data-2, "beta"], beta[first_case_data, "beta"]) # interpolate this one missing beta
+betas[first_case_data-1, "beta"] <- mean(betas[first_case_data-2, "beta"], betas[first_case_data, "beta"]) # interpolate this one missing beta
 
 SI_loess <- stats::loess(
   formula = beta ~ c(1:pad_steps),

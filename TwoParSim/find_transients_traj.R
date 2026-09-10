@@ -4,16 +4,15 @@ library(parallel)
 
 set.seed(18301930) # Setting a random seed
 
-simTrajectory <- readRDS("../simTrajectory.rds")
+simTrajectory <- readRDS("simTrajectory.rds")
 
 trajectory <- tibble()
 for (i in 1:10){
   trajectory <- trajectory %>%
-    bind_rows(readRDS(paste("../bfd/sim_trajectory_", i, ".rds", sep = "")))
+    bind_rows(readRDS(paste("bfd/sim_trajectory_", i, ".rds", sep = "")))
 }
 trajectory <- trajectory %>%
-  select(-time) %>%
-  left_join(simTrajectory, by = c(R0 = "R0", a = "amp")) %>%
+  left_join(simTrajectory, by = c(t = "t", R0 = "R0", a = "amp")) %>%
   relocate(t)
 
 dyn.load(paste("SIRfun", .Platform$dynlib.ext, sep = ""))
@@ -78,9 +77,9 @@ bfdReader <- function(rowvec){
   return(transP(eq, per, prm))
 }
 
-uniqueBFD <- trajectory %>% distinct(S, I, R0, a, period, .keep_all = TRUE)
+uniqueBFD <- trajectory %>% filter(!is.na(a)) %>% distinct(S, I, R0, a, period, .keep_all = TRUE)
 
-numCores <- 24
+numCores <- 8
 
 start_time <- Sys.time()
 per1 <- uniqueBFD %>% filter(period == 1)
@@ -107,7 +106,7 @@ full_per1 <- trajectory %>%
 # transient_no_na1 <- full_per1 %>% filter(!is.na(transient))
 # transient_no_na2 <- full_per2 %>% filter(!is.na(transient))
 
-saveRDS(full_per1, "Transient1_trajectory.rds")
+saveRDS(full_per1, "Transients/Transient1_trajectory.rds")
 # write.csv(transient_no_na1, "Transient_no_na1.csv")
 # write.csv(transient_no_na2, "Transient_no_na2.csv")
 
