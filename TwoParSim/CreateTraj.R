@@ -8,9 +8,6 @@ breaks <- c(1842, read.csv("../breaks/breaks.csv", header = FALSE, comment.char 
 load("../CC_code/SF.RData")
 
 full_series <- normalized_scarlet_fever_data %>%
-  mutate(birth.trend = approx(x = births$numdate, y = births$birth.trend, xout = numdate)$y,
-         pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y,
-         inner.pop = approx(x = births$numdate, y = births$inner.pop, xout = numdate)$y) %>%
   filter(numdate > 1842.01) %>%
   select(numdate, interpolated.deaths, birth.trend, acm_trend, pop, inner.pop)
 

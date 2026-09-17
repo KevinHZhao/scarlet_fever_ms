@@ -13,8 +13,6 @@ params <- read.csv("../CC_code/output/Params.csv")
 final <- read.csv("../CC_code/output/Final.csv")
 
 full_series <- normalized_scarlet_fever_data %>%
-  mutate(birth.trend = approx(x = births$numdate, y = births$birth.trend, xout = numdate)$y,
-         pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y) %>%
   filter(numdate > 1842.01) %>%
   select(numdate, interpolated.deaths, birth.trend, acm_trend, pop)
 

@@ -21,20 +21,13 @@ load("SF.RData")
 ## Read scans of RGWR cases from chatgpt, the date column is the END date of the week,
 ## to make it consistent I subtract seven days from the year column
 ## Assuming cases represents number of NEW infecteds each week
-RGWR_cases <- read.csv("RGWR_London_scarlet_fever_1901-1954.csv") %>%
-  mutate(date = ymd(date) - days(7))
 
 ## Test consistency between the deaths from gpt scans and from digitized scans after interpolating missing:
 ## full_series %>% filter(!is.na(deaths), deaths != interpolated.deaths) %>% View()
 
 full_series <- normalized_scarlet_fever_data %>%
-  mutate(birth.trend = approx(x = births$numdate, y = births$birth.trend, xout = numdate)$y,
-         pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y,
-         date = ymd(date)) %>%
   filter(numdate > 1842.01) %>%
-  select(numdate, date, interpolated.deaths, birth.trend, acm_trend, pop) %>%
-  left_join(RGWR_cases, by = "date") %>%
-  mutate(cases = approx(x = numdate, y = cases, xout = numdate)$y) # missing two weeks of case data in 1939, interpolating it
+  select(numdate, date, interpolated.deaths, birth.trend, acm_trend, cases, pop)
 
 front_pad <- 479 # Based on visually making early mortality padding look right
 end_pad <- 508 # Based on visually making late cases look right
