@@ -1,0 +1,113 @@
+# This is a csv of typos I found in the LBoM/RGWR digitized SF data set that I compared to the Wellcome (Wc) scans:
+# sd entry = start date entry error
+# ed entry = end date entry error
+# sd & ed entry = start and end date entry error (usually misaligned)
+# missing = missing entry/row
+# death entry = death entry error (probably more, just noted the ones I found myself from scanning through)
+"start date", "end date", "typo type", "notes"
+1949-12-30, 1950-01-07, sd entry, new sd = 1949-12-31
+1947-12-27, 1948-01-03, missing, new deaths = 2 new acm = 968 new births = 1535
+1941-11-27, 1941-12-06, sd entry, new sd = 1941-11-29
+1941-11-20, 1941-11-27, sd & ed entry, new sd = 1941-11-22 new ed = 1941-11-29
+1941-11-13, 1941-11-20, sd & ed entry, new sd = 1941-11-15 new ed = 1941-11-22
+1941-11-08, 1941-11-13, ed entry, new ed = 1941-11-15
+1940-07-07, 1940-07-13, sd entry, new sd = 1940-07-06
+1940-06-29, 1940-07-07, ed entry, new ed = 1940-07-06
+1939-12-29, 1940-01-06, sd entry, new sd = 1939-12-30
+1939-01-14, 1939-01-21, missing, new deaths = 0 new acm = 1302 new births = 1120
+1939-01-21, 1939-01-28, missing, Wc scans for this week TRULY MISSING MUST IMPUTE
+1938-07-16, 1938-06-23, ed entry, new ed = 1938-07-23
+1938-06-23, 1938-07-30, sd entry, new sd = 1938-07-23
+1933-04-15, 1933-02-22, ed entry, new ed = 1933-04-22
+1933-02-22, 1933-04-29, sd entry, new sd = 1933-04-22
+1932-12-30, 1933-01-07, sd entry, new sd = 1932-12-31
+1932-08-07, 1932-08-13, sd entry, new sd = 1932-08-06
+1932-07-30, 1932-08-07, ed entry, new ed = 1932-08-06
+1929-11-23, 1929-11-30, missing, new deaths = 2 new acm = 1032 new births = 1292
+1929-03-09, 1929-03-16, missing, new deaths = 1 new acm = 2006 new births = 1526
+1929-03-16, 1929-03-23, missing, new deaths = 0 new acm = 1775 new births = 1577
+1929-03-23, 1929-03-30, missing, new deaths = 2 new acm = 1331 new births = 1347
+1929-03-30, 1929-04-06, missing, new deaths = 1 new acm = 1202 new births = 1381
+1929-04-06, 1929-04-13, missing, new deaths = 2 new acm = 1153 new births = 1500
+1929-04-13, 1929-04-20, missing, new deaths = 1 new acm = 1176 new births = 1614
+1929-04-20, 1929-04-27, missing, new deaths = 0 new acm = 1091 new births = 1391
+1929-04-27, 1929-05-04, missing, new deaths = 0 new acm = 1039 new births = 1426
+1929-05-04, 1929-05-11, missing, new deaths = 1 new acm = 1019 new births = 1569
+1928-03-10, 1928-03-17, missing, SUSPECT YEAR MISWRITTEN...
+1928-03-17, 1928-03-24, missing,
+1928-03-24, 1928-03-31, missing,
+1928-03-31, 1928-04-07, missing,
+1928-04-07, 1928-04-14, missing,
+1928-04-14, 1928-04-21, missing,
+1928-04-21, 1928-04-28, missing,
+1928-04-28, 1928-05-05, missing,
+1928-05-05, 1928-05-12, missing, SUSPECT YEAR MISWRITTEN...
+same missing march april may dates for 1927
+1909-04-24, 1909-05-02, ed entry, new ed = 1909-05-01
+1909-05-02, 1909-05-09, sd & ed entry, new sd = 1909-05-01 new ed = 1909-05-08
+1909-05-09, 1909-05-16, sd & ed entry, new sd = 1909-05-08 new ed = 1909-05-15
+1909-05-16, 1909-05-23, sd & ed entry, new sd = 1909-05-15 new ed = 1909-05-22
+1909-05-23, 1909-05-30, sd & ed entry, new sd = 1909-05-22 new ed = 1909-05-29
+1909-05-30, 1909-06-06, sd & ed entry, new sd = 1909-05-29 new ed = 1909-06-05
+1909-06-06, 1909-06-13, sd & ed entry, new sd = 1909-06-05 new ed = 1909-06-12
+1909-06-13, 1909-06-20, sd & ed entry, new sd = 1909-06-12 new ed = 1909-06-19
+1909-06-20, 1909-06-27, sd & ed entry, new sd = 1909-06-19 new ed = 1909-06-26
+1909-06-27, 1909-07-04, sd & ed entry, new sd = 1909-06-26 new ed = 1909-07-03
+1909-07-04, 1909-07-11, sd & ed entry, new sd = 1909-07-03 new ed = 1909-07-10
+1909-07-11, 1909-07-18, sd & ed entry, new sd = 1909-07-10 new ed = 1909-07-17
+1909-07-18, 1909-07-25, sd & ed entry, new sd = 1909-07-17 new ed = 1909-07-24
+1909-07-25, 1909-08-01, sd & ed entry, new sd = 1909-07-24 new ed = 1909-07-31
+1909-08-01, 1909-08-08, sd & ed entry, new sd = 1909-07-31 new ed = 1909-08-07
+1909-08-08, 1909-08-15, sd & ed entry, new sd = 1909-08-07 new ed = 1909-08-14
+1909-08-15, 1909-08-22, sd & ed entry, new sd = 1909-08-14 new ed = 1909-08-21
+1909-08-22, 1909-08-29, sd & ed entry, new sd = 1909-08-21 new ed = 1909-08-28
+1909-08-29, 1909-09-05, sd & ed entry, new sd = 1909-08-28 new ed = 1909-09-04
+1909-09-05, 1909-09-12, sd & ed entry, new sd = 1909-09-04 new ed = 1909-09-11
+1909-09-12, 1909-09-19, sd & ed entry, new sd = 1909-09-11 new ed = 1909-09-18
+1909-09-19, 1909-09-26, sd & ed entry, new sd = 1909-09-18 new ed = 1909-09-25
+1909-09-26, 1909-10-03, sd & ed entry, new sd = 1909-09-25 new ed = 1909-10-02
+1909-10-03, 1909-10-10, sd & ed entry, new sd = 1909-10-02 new ed = 1909-10-09
+1909-10-10, 1909-10-17, sd & ed entry, new sd = 1909-10-09 new ed = 1909-10-16
+1909-10-17, 1909-10-24, sd & ed entry, new sd = 1909-10-16 new ed = 1909-10-23
+1909-10-24, 1909-10-31, sd & ed entry, new sd = 1909-10-23 new ed = 1909-10-30
+1909-10-31, 1909-11-07, sd & ed entry, new sd = 1909-10-30 new ed = 1909-11-06
+1909-11-07, 1909-11-14, sd & ed entry, new sd = 1909-11-06 new ed = 1909-11-13
+1909-11-14, 1909-11-21, sd & ed entry, new sd = 1909-11-13 new ed = 1909-11-20
+1909-11-21, 1909-11-28, sd & ed entry, new sd = 1909-11-20 new ed = 1909-11-27
+1909-11-28, 1909-12-05, sd & ed entry, new sd = 1909-11-27 new ed = 1909-12-04
+1909-12-05, 1909-12-12, sd & ed entry, new sd = 1909-12-04 new ed = 1909-12-11
+1909-12-12, 1909-12-19, sd & ed entry, new sd = 1909-12-11 new ed = 1909-12-18
+1909-12-19, 1909-12-26, sd & ed entry, new sd = 1909-12-18 new ed = 1909-12-25
+1909-12-26, 1910-01-01, sd entry, new sd = 1909-12-25
+1908-12-19, 1908-12-26, death entry, new deaths = 7
+1908-12-26, 1909-01-02, missing, new deaths = 7 new acm = 1805 new births = 2228
+1905-12-23, 1905-12-31, ed entry, new ed = 1905-12-30
+1905-12-31, 1906-01-06, sd entry, new sd = 1905-12-30
+1896-06-06, 1896-06-15, ed entry, new ed = 1896-06-13
+1896-06-15, 1896-06-22, sd & ed entry, new sd = 1896-06-13 new ed = 1896-06-20
+1896-06-22, 1896-06-29, sd & ed entry, new sd = 1896-06-20 new ed = 1896-06-27
+1896-06-29, 1896-07-04, sd entry, new sd = 1896-06-27
+1882-01-01, 1882-01-07, sd entry, new sd = 1881-12-31
+1880-11-06, 1880-11-13, missing, new deaths = 84 new acm = 1636 new births = 2538
+1874-11-21, 1874-11-27, ed entry, new ed = 1874-11-28
+1874-11-27, 1874-12-05, sd entry, new sd = 1874-11-28
+1873-11-22, 1873-11-28, ed entry, new ed = 1873-11-29
+1873-11-28, 1873-12-06, sd entry, new sd = 1873-11-29
+1868-12-26, 1869-01-02, missing, new deaths = 83 new acm = 1629 new births = 2505
+1868-12-12, 1868-12-19, missing, new deaths = 100 new acm = 1558 new births = 2206
+1868-06-06, 1868-06-18, ed entry, new ed = 1868-06-13
+1868-06-18, 1868-06-20, sd entry, new sd = 1868-06-13
+1867-12-14, 1867-12-21, missing, new deaths = 48 new acm = 1561 new births = 2161
+1866-12-15, 1866-12-22, missing, Wc scans for this entire year TRULY MISSING MUST IMPUTE
+1865-12-16, 1865-12-23, missing, new deaths = 43 new acm = 1590 new births = 2109
+1863-12-26, 1864-01-02, missing, new deaths = 93 new acm = 1642 new births = 2308
+1848-10-30, 1848-10-07, sd entry, new sd = 1848-09-30
+1847-12-25, 1848-01-01, missing, new deaths = 43 new acm = 1599 new births = 1452
+1847-08-31, 1847-08-07, sd entry, new sd = 1847-07-31
+1847-01-23, 1847-01-31, ed entry, new ed = 1847-01-30
+1847-01-31, 1847-02-06, sd entry, new sd = 1847-01-30
+1844-04-30, 1844-04-06, sd entry, new sd = 1844-03-30
+1843-10-30, 1843-10-07, sd entry, new sd = 1843-09-30
+1842-05-30, 1842-05-07, sd entry, new sd = 1842-04-30
+1842-04-30, 1842-05-07, missing, new deaths = 7 new acm = 756 NO BIRTHS GIVEN
+1842-01-02, 1842-01-08, sd entry, new sd = 1842-01-01

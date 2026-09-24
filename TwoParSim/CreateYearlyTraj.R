@@ -4,7 +4,7 @@ simTrajectory <- readRDS("simTrajectory.rds")
 traj_trans1 <- readRDS("Transients/Transient1_trajectory.rds")
 
 yrly_traj <- tibble()
-for (i in 1:10){
+for (i in 1:10) {
   yrly_traj <- yrly_traj %>%
     bind_rows(readRDS(paste("bfd/sim_trajectory_", i, ".rds", sep = "")))
 }
