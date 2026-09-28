@@ -1,0 +1,17 @@
+# typos specific to the birth series:
+# also add 1881 birth data
+"start date", "end date", "typo type", "notes"
+1909-12-26, 1910-01-02, sd & ed entry, new sd = 1909-12-25, 1910-01-01
+1910-01-02, 1910-01-08, sd entry, new sd = 1910-01-01
+1882-12-24, 1882-01-01, sd & ed entry, new sd = 1881-12-24, 1881-12-31
+1882-01-01, 1882-01-07, sd entry, new sd = 1881-12-31
+1868-12-26, 1869-01-02, missing, new births = 2505
+1868-12-19, 1868-12-26, birth entry, new births = 1664
+1868-12-12, 1868-12-19, birth entry, new births = 2206
+1867-12-14, 1867-12-21, birth entry, new births = 2161
+1865-12-16, 1865-12-23, birth entry, new births = 2109
+
+# 1881 scans missing from Wc too, but annual return from 1882 says 132904 births in 1881 annually
+# maybe we could use the 1883 weekly scans to get the weekly births since each table 2 displays births from the equivalent week for the last 10 years...
+# Olga interpolated this annual birth count, so I'll use these known annual births and uniformly distribute over the weeks
+# I'll use Olga's data for 1842-1844, where she uniformly distributes the annual totals for each year

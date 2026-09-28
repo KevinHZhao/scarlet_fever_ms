@@ -6,7 +6,7 @@
 # death entry = death entry error (probably more, just noted the ones I found myself from scanning through)
 "start date", "end date", "typo type", "notes"
 1949-12-30, 1950-01-07, sd entry, new sd = 1949-12-31
-1947-12-27, 1948-01-03, missing, new deaths = 2 new acm = 968 new births = 1535
+1947-12-27, 1948-01-03, missing, new deaths = 0 new acm = 968 new births = 1535
 1941-11-27, 1941-12-06, sd entry, new sd = 1941-11-29
 1941-11-20, 1941-11-27, sd & ed entry, new sd = 1941-11-22 new ed = 1941-11-29
 1941-11-13, 1941-11-20, sd & ed entry, new sd = 1941-11-15 new ed = 1941-11-22
@@ -14,8 +14,8 @@
 1940-07-07, 1940-07-13, sd entry, new sd = 1940-07-06
 1940-06-29, 1940-07-07, ed entry, new ed = 1940-07-06
 1939-12-29, 1940-01-06, sd entry, new sd = 1939-12-30
-1939-01-14, 1939-01-21, missing, new deaths = 0 new acm = 1302 new births = 1120
-1939-01-21, 1939-01-28, missing, Wc scans for this week TRULY MISSING MUST IMPUTE
+1939-01-14, 1939-01-21, missing, new deaths = 0 new acm = 1274 new births = 1054
+1939-01-21, 1939-01-28, missing, new deaths = 2 new acm = 1111 new births = 969
 1938-07-16, 1938-06-23, ed entry, new ed = 1938-07-23
 1938-06-23, 1938-07-30, sd entry, new sd = 1938-07-23
 1933-04-15, 1933-02-22, ed entry, new ed = 1933-04-22
@@ -30,19 +30,27 @@
 1929-03-30, 1929-04-06, missing, new deaths = 1 new acm = 1202 new births = 1381
 1929-04-06, 1929-04-13, missing, new deaths = 2 new acm = 1153 new births = 1500
 1929-04-13, 1929-04-20, missing, new deaths = 1 new acm = 1176 new births = 1614
-1929-04-20, 1929-04-27, missing, new deaths = 0 new acm = 1091 new births = 1391
+1929-04-20, 1929-04-27, missing, new deaths = 0 new acm = 1092 new births = 1391
 1929-04-27, 1929-05-04, missing, new deaths = 0 new acm = 1039 new births = 1426
 1929-05-04, 1929-05-11, missing, new deaths = 1 new acm = 1019 new births = 1569
-1928-03-10, 1928-03-17, missing, new deaths = 9 new acm = 1305 new births = 1461
-1928-03-17, 1928-03-24, missing, new deaths = 4 new acm = 1361 new births = 1581
-1928-03-24, 1928-03-31, missing, new deaths = 9 new acm = 1223 new births = 1486
-1928-03-31, 1928-04-07, missing, new deaths = 5 new acm = 1169 new births = 1266
-1928-04-07, 1928-04-14, missing, new deaths = 4 new acm = 1203 new births = 1444
-1928-04-14, 1928-04-21, missing, new deaths = 5 new acm = 1137 new births = 1524
-1928-04-21, 1928-04-28, missing, new deaths = 5 new acm = 1135 new births = 1571
+1928-03-10, 1928-03-17, missing, new deaths = 2 new acm = 1304 new births = 1461
+1928-03-17, 1928-03-24, missing, new deaths = 0 new acm = 1361 new births = 1581
+1928-03-24, 1928-03-31, missing, new deaths = 2 new acm = 1223 new births = 1486
+1928-03-31, 1928-04-07, missing, new deaths = 1 new acm = 1169 new births = 1266
+1928-04-07, 1928-04-14, missing, new deaths = 1 new acm = 1203 new births = 1444
+1928-04-14, 1928-04-21, missing, new deaths = 2 new acm = 1137 new births = 1524
+1928-04-21, 1928-04-28, missing, new deaths = 1 new acm = 1135 new births = 1571
 1928-04-28, 1928-05-05, missing, new deaths = 3 new acm = 1127 new births = 1523
 1928-05-05, 1928-05-12, missing, new deaths = 1 new acm = 948 new births = 1554
-same missing march april may dates for 1927
+1927-03-12, 1927-03-19, missing, new deaths = 0 new acm = 1114 new births = 1634
+1927-03-19, 1927-03-26, missing, new deaths = 2 new acm = 1068 new births = 1419
+1927-03-26, 1927-04-02, missing, new deaths = 1 new acm = 959 new births = 1565
+1927-04-02, 1927-04-09, missing, new deaths = 0 new acm = 980 new births = 1521
+1927-04-09, 1927-04-16, missing, new deaths = 3 new acm = 944 new births = 1382
+1927-04-16, 1927-04-23, missing, new deaths = 1 new acm = 975 new births = 1553
+1927-04-23, 1927-04-30, missing, new deaths = 1 new acm = 980 new births = 1738
+1927-04-30, 1927-05-07, missing, new deaths = 1 new acm = 959 new births = 1526
+1927-05-07, 1927-05-14, missing, new deaths = 0 new acm = 857 new births = 1572
 1909-04-24, 1909-05-02, ed entry, new ed = 1909-05-01
 1909-05-02, 1909-05-09, sd & ed entry, new sd = 1909-05-01 new ed = 1909-05-08
 1909-05-09, 1909-05-16, sd & ed entry, new sd = 1909-05-08 new ed = 1909-05-15
@@ -79,8 +87,8 @@ same missing march april may dates for 1927
 1909-12-12, 1909-12-19, sd & ed entry, new sd = 1909-12-11 new ed = 1909-12-18
 1909-12-19, 1909-12-26, sd & ed entry, new sd = 1909-12-18 new ed = 1909-12-25
 1909-12-26, 1910-01-01, sd entry, new sd = 1909-12-25
-1908-12-19, 1908-12-26, death entry, new deaths = 7
 1908-12-26, 1909-01-02, missing, new deaths = 7 new acm = 1805 new births = 2228
+1908-12-19, 1908-12-26, death entry, new deaths = 6 # these two weeks are updated in the 1909 scans to be slightly different than the 1908 scans, so will use the 1909 scans for these two weeks
 1905-12-23, 1905-12-31, ed entry, new ed = 1905-12-30
 1905-12-31, 1906-01-06, sd entry, new sd = 1905-12-30
 1896-06-06, 1896-06-15, ed entry, new ed = 1896-06-13
@@ -98,9 +106,10 @@ same missing march april may dates for 1927
 1868-06-06, 1868-06-18, ed entry, new ed = 1868-06-13
 1868-06-18, 1868-06-20, sd entry, new sd = 1868-06-13
 1867-12-14, 1867-12-21, missing, new deaths = 48 new acm = 1561 new births = 2161
-1866-12-15, 1866-12-22, missing, Wc scans for this entire year TRULY MISSING MUST IMPUTE
+1866-12-15, 1866-12-22, missing, can use first weekly report of 1867 to see some 1866 data in Wc new deaths = 30 new acm = 1377
 1865-12-16, 1865-12-23, missing, new deaths = 43 new acm = 1590 new births = 2109
 1863-12-26, 1864-01-02, missing, new deaths = 93 new acm = 1642 new births = 2308
+1858-06-05, 1858-06-12, death entry, new deaths = 47
 1848-10-30, 1848-10-07, sd entry, new sd = 1848-09-30
 1847-12-25, 1848-01-01, missing, new deaths = 43 new acm = 1599 new births = 1452
 1847-08-31, 1847-08-07, sd entry, new sd = 1847-07-31
@@ -109,5 +118,6 @@ same missing march april may dates for 1927
 1844-04-30, 1844-04-06, sd entry, new sd = 1844-03-30
 1843-10-30, 1843-10-07, sd entry, new sd = 1843-09-30
 1842-05-30, 1842-05-07, sd entry, new sd = 1842-04-30
-1842-04-30, 1842-05-07, missing, new deaths = 7 new acm = 756 NO BIRTHS GIVEN
 1842-01-02, 1842-01-08, sd entry, new sd = 1842-01-01
+
+#annual returns missing can be checked too
