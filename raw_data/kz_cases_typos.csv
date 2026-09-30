@@ -1,0 +1,11 @@
+# typos specific to the acm series:
+"date", "typo type", "notes"
+1921-12-31, missing, CASES NOT IN WC
+1936-01-04, misaligned error, new cases = 224 (only the cases deaths/births/acm seem fine)
+# misaligned (should move values given down a week, seemingly until 1938-01-01)
+1939-01-21, NA, WEEK RETURN NOT IN WC
+1939-01-28, NA, WEEK RETURN NOT IN WC
+1942-01-03, NA, WEEK RETURN NOT IN WC
+1943-01-02, NA, new cases = 141
+1944-01-01, NA, new cases = 148
+1949-01-01, NA, new cases = 54
