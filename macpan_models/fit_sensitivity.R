@@ -1,5 +1,6 @@
 library(macpan2)
 library(tidyverse)
+library(parallel)
 options(
   macpan2_tmb_adfun_args = list(
     inner.control = list(maxit = 100000)
@@ -355,7 +356,7 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
   write.csv(
     params,
     paste0(
-      "output_sensitivity/Params_",
+      "../ms_data/output_sensitivity/Params_",
       CFP_min,
       "_",
       CFP_max,
@@ -369,7 +370,7 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
   write.csv(
     results,
     paste0(
-      "output_sensitivity/Results_",
+      "../ms_data/output_sensitivity/Results_",
       CFP_min,
       "_",
       CFP_max,
@@ -383,7 +384,7 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
   write.csv(
     final,
     paste0(
-      "output_sensitivity/Final_",
+      "../ms_data/output_sensitivity/Final_",
       CFP_min,
       "_",
       CFP_max,
@@ -415,4 +416,4 @@ all_res <- mclapply(
   mc.cores = 81
 )
 
-saveRDS(all_res, file = "output_sensitivity/all_res.RDS")
+saveRDS(all_res, file = "../ms_data/output_sensitivity/all_res.RDS")
