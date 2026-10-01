@@ -9,16 +9,8 @@ source("helper_funs/utils.R")
 wkyear <- 365.25 / 7
 
 full_series <- normalized_scarlet_fever_data %>%
-  mutate(
-    birth.trend = approx(
-      x = births$numdate,
-      y = births$birth.trend,
-      xout = numdate
-    )$y,
-    pop = approx(x = births$numdate, y = births$pop, xout = numdate)$y
-  ) %>%
-  filter(numdate > 1842.01) %>%
-  select(numdate, interpolated.deaths, birth.trend, acm_trend, pop)
+  filter(numdate > year.start, numdate < year.end) %>%
+  select(numdate, deaths, birth.trend, acm.trend, pop)
 
 steps <- nrow(full_series) # Steps in SF series
 front_pad <- 479 # SF deaths to repeat at beginning
@@ -36,7 +28,7 @@ CFP_parms <- expand_grid(CFP_max, CFP_min, CFP_rate, CFP_mid)
 
 read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
   mac_parms <- read.csv(paste0(
-    "../output_sensitivity/Params_",
+    "../../ms_data/output_sensitivity/Params_",
     iCFP_min,
     "_",
     iCFP_max,
@@ -89,7 +81,7 @@ read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
   gamma <- 7 / 15 # Assume time from infection to death equals latent + infectious period, latent period = 1 day, infectious period = 2 weeks
 
   mac_final <- read.csv(paste0(
-    "../output_sensitivity/Final_",
+    "../../ms_data/output_sensitivity/Final_",
     iCFP_min,
     "_",
     iCFP_max,
@@ -100,7 +92,7 @@ read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
     ".csv"
   ))
   mac_results <- read.csv(paste0(
-    "../output_sensitivity/Results_",
+    "../../ms_data/output_sensitivity/Results_",
     iCFP_min,
     "_",
     iCFP_max,
@@ -139,7 +131,7 @@ full_df <- mclapply(
     week = 1:(pad_steps)
   )
 
-all_res <- readRDS("../output_sensitivity/all_res.RDS")
+all_res <- readRDS("../../ms_data/output_sensitivity/all_res.RDS")
 objfns <- lapply(all_res, function(x) {
   x$objective
 }) |>

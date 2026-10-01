@@ -336,9 +336,44 @@ simulator$print$matrix_dims()
 
 start_time <- Sys.time()
 
-simulator$optimize$nlminb(
-  control = list(eval.max = 1000000, iter.max = 1000000)
+simulator$optimize$DEoptim(
+  lower = c(
+    qlogis(1 / 6.5), ## From AndeMay91
+    qlogis(0.0002),
+    qlogis(0.001),
+    qlogis(0.002),
+    1,
+    1,
+    log(steps / 2 / 2),
+    log(0.001), ## Set initial value of CFP logistic curve rate parameter to 0.01
+    0,
+    0,
+    0,
+    rep(0, (2 * terms + 1) * numrbf)
+  ),
+  upper = c(
+    qlogis(1 / 6.5), ## From AndeMay91
+    qlogis(0.0002),
+    qlogis(0.1),
+    qlogis(0.2),
+    1,
+    1,
+    log(steps / 2 * 1.5),
+    log(0.1), ## Set initial value of CFP logistic curve rate parameter to 0.01
+    0,
+    0,
+    0,
+    rep(0, (2 * terms + 1) * numrbf)
+  )
 )
+# simulator$optimize$nlminb(
+#   control = list(
+#     eval.max = 10000,
+#     iter.max = 10000,
+#     step.min = 1e-8,
+#     step.max = 1
+#   )
+# )
 
 params <- simulator$current$params_frame()
 results <- simulator$report()
