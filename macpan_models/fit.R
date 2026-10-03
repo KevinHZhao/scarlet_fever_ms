@@ -1,5 +1,6 @@
 library(macpan2)
 library(tidyverse)
+library(DEoptim)
 options(
   macpan2_tmb_adfun_args = list(
     inner.control = list(maxit = 100000)
@@ -336,44 +337,45 @@ simulator$print$matrix_dims()
 
 start_time <- Sys.time()
 
-simulator$optimize$DEoptim(
-  lower = c(
-    qlogis(1 / 6.5), ## From AndeMay91
-    qlogis(0.0002),
-    qlogis(0.001),
-    qlogis(0.002),
-    1,
-    1,
-    log(steps / 2 / 2),
-    log(0.001), ## Set initial value of CFP logistic curve rate parameter to 0.01
-    0,
-    0,
-    0,
-    rep(0, (2 * terms + 1) * numrbf)
-  ),
-  upper = c(
-    qlogis(1 / 6.5), ## From AndeMay91
-    qlogis(0.0002),
-    qlogis(0.1),
-    qlogis(0.2),
-    1,
-    1,
-    log(steps / 2 * 1.5),
-    log(0.1), ## Set initial value of CFP logistic curve rate parameter to 0.01
-    0,
-    0,
-    0,
-    rep(0, (2 * terms + 1) * numrbf)
-  )
-)
-# simulator$optimize$nlminb(
-#   control = list(
-#     eval.max = 10000,
-#     iter.max = 10000,
-#     step.min = 1e-8,
-#     step.max = 1
+# simulator$optimize$DEoptim(
+#   lower = c(
+#     qlogis(0.00001),
+#     qlogis(0.00001),
+#     qlogis(0.001),
+#     qlogis(0.001),
+#     -5,
+#     -5,
+#     log(steps / 4),
+#     log(0.001),
+#     -5,
+#     -5,
+#     -5,
+#     rep(-2, (2 * terms + 1) * numrbf)
+#   ),
+#   upper = c(
+#     qlogis(0.5),
+#     qlogis(0.5),
+#     qlogis(0.5),
+#     qlogis(0.5),
+#     5,
+#     5,
+#     log(steps * 3 / 4),
+#     log(10),
+#     5,
+#     5,
+#     5,
+#     rep(2, (2 * terms + 1) * numrbf)
+#   ),
+#   control = DEoptim.control(
+#     parallelType = 1
 #   )
 # )
+simulator$optimize$optim(
+  method = "CG",
+  control = list(
+    maxit = 10000000
+  )
+)
 
 params <- simulator$current$params_frame()
 results <- simulator$report()
