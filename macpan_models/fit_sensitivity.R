@@ -66,6 +66,7 @@ for (n in 1:10) {  # Adjust range as needed
 }
 
 iterations <- max_n + 1
+print(paste0("Running sensitivity analysis iteration #", iterations, "."))
 prev_all_res <- readRDS(paste0("output_sensitivity_", max_n, "/all_res.RDS"))
 best_ind <- which.min(sapply(prev_all_res, function(res) res$objective))
 best_ic <- readRDS(paste0("output_sensitivity_", max_n, "/CFP_parms.RDS"))[best_ind, ]
