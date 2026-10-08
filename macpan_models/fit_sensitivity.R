@@ -54,10 +54,26 @@ first_case_data <- which(!is.na(model_case_series))[[1]] # which time step we wi
 
 missing_case_data <- which(is.na(model_case_series))
 
-CFP_max <- c(0.5, 1, 2) * 0.025
-CFP_min <- c(0.5, 1, 2) * 0.01
-CFP_rate <- c(0.5, 1, 2) * 0.01
-CFP_mid <- c(0.9, 1, 1.1) * steps / 2
+CFP_inits <- c(0.025, 0.01, 0.01, steps / 2)
+
+max_n <- 0
+
+for (n in 1:10) {  # Adjust range as needed
+    dir_name <- file.path(paste0("output_sensitivity_", n))
+    if (dir.exists(dir_name)) {
+        max_n <- n  # Update max_n if the directory exists
+    }
+}
+
+iterations <- max_n + 1
+prev_all_res <- readRDS(paste0("output_sensitivity_", max_n, "/all_res.RDS"))
+best_ind <- which.min(sapply(prev_all_res, function(res) res$objective))
+best_ic <- readRDS(paste0("output_sensitivity_", max_n, "/CFP_parms.RDS"))[best_ind, ]
+
+CFP_max <- c(0.5, 1, 2) * CFP_inits[1]
+CFP_min <- c(0.5, 1, 2) * CFP_inits[2]
+CFP_rate <- c(0.5, 1, 2) * CFP_inits[3]
+CFP_mid <- c(0.9, 1, 1.1) * CFP_inits[4]
 CFP_parms <- expand_grid(CFP_max, CFP_min, CFP_rate, CFP_mid)
 
 numrbf <- 64
@@ -356,7 +372,9 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
   write.csv(
     params,
     paste0(
-      "../ms_data/output_sensitivity/Params_",
+      "output_sensitivity_",
+      iterations,
+      "/Params_",
       CFP_min,
       "_",
       CFP_max,
@@ -370,7 +388,9 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
   write.csv(
     results,
     paste0(
-      "../ms_data/output_sensitivity/Results_",
+      "output_sensitivity_",
+      iterations,
+      "/Results_",
       CFP_min,
       "_",
       CFP_max,
@@ -384,7 +404,9 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
   write.csv(
     final,
     paste0(
-      "../ms_data/output_sensitivity/Final_",
+      "output_sensitivity_",
+      iterations,
+      "/Final_",
       CFP_min,
       "_",
       CFP_max,
@@ -408,6 +430,10 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
   #
 }
 
+if (!dir.exists(paste0("output_sensitivity_", iterations))) {
+    dir.create(paste0("output_sensitivity_", iterations), recursive = TRUE)
+}
+
 all_res <- mclapply(
   split(CFP_parms, seq_len(nrow(CFP_parms))),
   function(row) {
@@ -416,4 +442,7 @@ all_res <- mclapply(
   mc.cores = 81
 )
 
-saveRDS(all_res, file = "../ms_data/output_sensitivity/all_res.RDS")
+saveRDS(all_res, file = paste0("output_sensitivity_", iterations, "/all_res.RDS"))
+saveRDS(CFP_parms, file = paste0("output_sensitivity_", iterations, "/CFP_parms.RDS"))
+
+print("Summary of objective function values for checking if initial conditions are not sensitive:\n", summary(sapply(all_res, function(res) res$objective)))

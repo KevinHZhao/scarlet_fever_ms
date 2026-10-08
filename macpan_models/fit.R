@@ -1,6 +1,5 @@
 library(macpan2)
 library(tidyverse)
-library(DEoptim)
 options(
   macpan2_tmb_adfun_args = list(
     inner.control = list(maxit = 100000)
@@ -337,41 +336,7 @@ simulator$print$matrix_dims()
 
 start_time <- Sys.time()
 
-# simulator$optimize$DEoptim(
-#   lower = c(
-#     qlogis(0.00001),
-#     qlogis(0.00001),
-#     qlogis(0.001),
-#     qlogis(0.001),
-#     -5,
-#     -5,
-#     log(steps / 4),
-#     log(0.001),
-#     -5,
-#     -5,
-#     -5,
-#     rep(-2, (2 * terms + 1) * numrbf)
-#   ),
-#   upper = c(
-#     qlogis(0.5),
-#     qlogis(0.5),
-#     qlogis(0.5),
-#     qlogis(0.5),
-#     5,
-#     5,
-#     log(steps * 3 / 4),
-#     log(10),
-#     5,
-#     5,
-#     5,
-#     rep(2, (2 * terms + 1) * numrbf)
-#   ),
-#   control = DEoptim.control(
-#     parallelType = 1
-#   )
-# )
-simulator$optimize$optim(
-  method = "CG",
+simulator$optimize$nlminb(
   control = list(
     maxit = 10000000
   )

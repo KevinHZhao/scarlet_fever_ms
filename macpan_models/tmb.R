@@ -2,6 +2,10 @@ library(macpan2)
 
 computations <- list(
   N ~ pop[time_step(1)],
+  # S ~ clamp(S), # clamping these variables so that objective function solver behaves well
+  # I ~ clamp(I),
+  # R ~ clamp(R),
+  # D ~ clamp(D),
   model_pop ~ sum(S, I, R),
   outflows ~ model_pop - N - CFP * gamma * I ## term accounting for deaths and immigration/emigration (can think of as a reduction to death rate, might be positive)
 )
