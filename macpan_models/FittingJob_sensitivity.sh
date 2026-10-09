@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --account=def-earn
 #SBATCH --nodes=1
-#SBATCH --time=24:00:00
+#SBATCH --time=03:00:00
 #SBATCH --cpus-per-task=81
 #SBATCH --mem-per-cpu=1G
 #SBATCH --mail-user=zhaok22@mcmaster.ca

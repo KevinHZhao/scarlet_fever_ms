@@ -67,9 +67,14 @@ for (n in 1:10) {  # Adjust range as needed
 
 iterations <- max_n + 1
 print(paste0("Running sensitivity analysis iteration #", iterations, "."))
-prev_all_res <- readRDS(paste0("output_sensitivity_", max_n, "/all_res.RDS"))
-best_ind <- which.min(sapply(prev_all_res, function(res) res$objective))
-best_ic <- readRDS(paste0("output_sensitivity_", max_n, "/CFP_parms.RDS"))[best_ind, ]
+
+if (dir.exists(paste0("output_sensitivity_", max_n))) {
+  prev_all_res <- readRDS(paste0("output_sensitivity_", max_n, "/all_res.RDS"))
+  best_ind <- which.min(sapply(prev_all_res, function(res) res$objective))
+  CFP_inits <- readRDS(paste0("output_sensitivity_", max_n, "/CFP_parms.RDS"))[best_ind, ]
+}
+
+print(paste("Using inits:", paste(CFP_inits, collapse = " ")))
 
 CFP_max <- c(0.5, 1, 2) * CFP_inits[1]
 CFP_min <- c(0.5, 1, 2) * CFP_inits[2]
@@ -446,4 +451,6 @@ all_res <- mclapply(
 saveRDS(all_res, file = paste0("output_sensitivity_", iterations, "/all_res.RDS"))
 saveRDS(CFP_parms, file = paste0("output_sensitivity_", iterations, "/CFP_parms.RDS"))
 
-print("Summary of objective function values for checking if initial conditions are not sensitive:\n", summary(sapply(all_res, function(res) res$objective)))
+print("Summary of objective function values for checking if initial conditions are not sensitive:")
+summary(sapply(all_res, function(res) res$objective))
+print(paste("Minimum objective function with initial conditions:", paste(CFP_parms[which.min(sapply(all_res, function(res) res$objective)),], collapse = " ")))
