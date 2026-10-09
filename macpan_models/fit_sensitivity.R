@@ -71,7 +71,7 @@ print(paste0("Running sensitivity analysis iteration #", iterations, "."))
 if (dir.exists(paste0("output_sensitivity_", max_n))) {
   prev_all_res <- readRDS(paste0("output_sensitivity_", max_n, "/all_res.RDS"))
   best_ind <- which.min(sapply(prev_all_res, function(res) res$objective))
-  CFP_inits <- readRDS(paste0("output_sensitivity_", max_n, "/CFP_parms.RDS"))[best_ind, ]
+  CFP_inits <- unlist(readRDS(paste0("output_sensitivity_", max_n, "/CFP_parms.RDS"))[best_ind, ])
 }
 
 print(paste("Using inits:", paste(CFP_inits, collapse = " ")))
