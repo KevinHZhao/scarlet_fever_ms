@@ -281,25 +281,27 @@ lower_parms <-
     log(steps / 4),
     log(0.001), ## Set initial value of CFP logistic curve rate parameter to 0.01
     -1,
-    -1,
-    -1,
-    rep(-2, (2 * terms + 1) * numrbf)
+    -5,
+    -5,
+    rep(-2, numrbf),
+    rep(-0.2, 2 * terms * numrbf)
   )
 
 upper_parms <- 
   c(
     qlogis(5 / 6.5), ## From AndeMay91
-    qlogis(0.002),
+    qlogis(0.2),
     qlogis(0.1),
     qlogis(0.25),
     5,
     5,
     log(3 * steps / 4),
-    log(0.1), ## Set initial value of CFP logistic curve rate parameter to 0.01
+    log(1), ## Set initial value of CFP logistic curve rate parameter to 0.01
+    2.5,
     3,
     3,
-    3,
-    rep(1, (2 * terms + 1) * numrbf) # if this is too high then beta will become negative causing bad things to happen, 1.2 breaks it...
+    rep(1, numrbf), # if this is too high then beta will become negative causing bad things to happen, 1.2 breaks it...
+    rep(0.2, 2 * terms * numrbf)
   )
 
 simulator$replace$params(
@@ -356,14 +358,18 @@ simulator$replace$params(
 
 simulator$report()
 simulator$print$matrix_dims()
+print(detectCores())
 
 start_time <- Sys.time()
 
-simulator$optimize$DEoptim(
+set.seed(1234)
+deopt_out <- simulator$optimize$DEoptim(
   lower = lower_parms,
   upper = upper_parms,
   control = DEoptim.control(
-    parallelType = 1
+    itermax = 10000,
+    steptol = 200,
+    parallelType = "parallel"
   )
 )
 
@@ -374,9 +380,11 @@ final <- mp_final(simulator)
 end_time <- Sys.time()
 print(end_time - start_time)
 
-write.csv(params, paste0("../ms_data/Params.csv"))
-write.csv(results, paste0("../ms_data/Results.csv"))
-write.csv(final, paste0("../ms_data/Final.csv"))
+#  write.csv(params, paste0("../ms_data/Params.csv"))
+#  write.csv(results, paste0("../ms_data/Results.csv"))
+#  write.csv(final, paste0("../ms_data/Final.csv"))
+saveRDS(simulator, "./deoptsim.RDS")
+saveRDS(deopt_out, "./deopt_out.RDS")
 
 # set.seed(101)
 # nsim <- 1000
