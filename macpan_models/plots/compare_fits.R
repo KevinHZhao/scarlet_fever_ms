@@ -18,17 +18,24 @@ end_pad <- 508 # SF deaths to repeat at end
 pad_steps <- steps + front_pad + end_pad # Steps in the final model
 numrbf <- 64
 
-CFP_max <- c(0.5, 1, 2) * 0.025
-CFP_min <- c(0.5, 1, 2) * 0.01
-CFP_rate <- c(0.5, 1, 2) * 0.01
-CFP_mid <- c(0.9, 1, 1.1) * pad_steps / 2
-CFP_parms <- expand_grid(CFP_max, CFP_min, CFP_rate, CFP_mid)
+max_n <- 0
+
+for (n in 1:10) {  # Adjust range as needed
+    dir_name <- file.path(paste0("../output_sensitivity_", n))
+    if (dir.exists(dir_name)) {
+        max_n <- n  # Update max_n if the directory exists
+    }
+}
+
+CFP_parms <- readRDS(paste0("../output_sensitivity_", max_n, "/CFP_parms.RDS"))
 
 # Macpan parameter simplifying --------------------------------------------
 
 read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
   mac_parms <- read.csv(paste0(
-    "../../ms_data/output_sensitivity/Params_",
+    "../output_sensitivity_",
+    max_n,
+    "/Params_",
     iCFP_min,
     "_",
     iCFP_max,
@@ -81,7 +88,9 @@ read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
   gamma <- 7 / 15 # Assume time from infection to death equals latent + infectious period, latent period = 1 day, infectious period = 2 weeks
 
   mac_final <- read.csv(paste0(
-    "../../ms_data/output_sensitivity/Final_",
+    "../output_sensitivity_",
+    max_n,
+    "/Final_",
     iCFP_min,
     "_",
     iCFP_max,
@@ -92,7 +101,9 @@ read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
     ".csv"
   ))
   mac_results <- read.csv(paste0(
-    "../../ms_data/output_sensitivity/Results_",
+    "../output_sensitivity_",
+    max_n,
+    "/Results_",
     iCFP_min,
     "_",
     iCFP_max,
@@ -131,7 +142,7 @@ full_df <- mclapply(
     week = 1:(pad_steps)
   )
 
-all_res <- readRDS("../../ms_data/output_sensitivity/all_res.RDS")
+all_res <- readRDS(paste0("../output_sensitivity_", max_n, "/all_res.RDS"))
 objfns <- lapply(all_res, function(x) {
   x$objective
 }) |>

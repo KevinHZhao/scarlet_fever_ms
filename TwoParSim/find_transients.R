@@ -5,45 +5,55 @@ library(parallel)
 set.seed(18301930) # Setting a random seed
 
 bfd <- tibble()
-for (i in 1:10){
-  bfd <- bfd %>% bind_rows(readRDS(paste("bfd/bfd_", i, ".rds", sep = "")))
+for (i in 1:10) {
+  bfd <- bfd %>%
+    bind_rows(readRDS(paste("../ms_data/bfd/bfd_", i, ".rds", sep = "")))
 }
 
-SIRCsim <- function(run.time, iState, delt = 1e-3, prms){
-  return(as.data.frame(ode(y = iState,
-                           times = seq(0, run.time, delt),
-                           func = "SIRmap",
-                           parms = prms,
-                           dllname="SIRfun",
-                           initfunc = "initmod")
-                       ) %>%
-           tail(n = 1) %>%
-           select(-time) %>%
-           unlist(., use.names=FALSE)
-         )
+SIRCsim <- function(run.time, iState, delt = 1e-3, prms) {
+  return(
+    as.data.frame(ode(
+      y = iState,
+      times = seq(0, run.time, delt),
+      func = "SIRmap",
+      parms = prms,
+      dllname = "SIRfun",
+      initfunc = "initmod"
+    )) %>%
+      tail(n = 1) %>%
+      select(-time) %>%
+      unlist(., use.names = FALSE)
+  )
 }
 
-transP <- function(eq,per,prm,hach=1e-6,rad=1e-5,nsmp=10,trn.tol=1e-4){
-  angseq <- seq(0,by=2*pi/nsmp,length=nsmp)
+transP <- function(
+  eq,
+  per,
+  prm,
+  hach = 1e-6,
+  rad = 1e-5,
+  nsmp = 10,
+  trn.tol = 1e-4
+) {
+  angseq <- seq(0, by = 2 * pi / nsmp, length = nsmp)
 
-  fun <- function(vec,par=prm){
-    return(SIRCsim(run.time=1,iState=vec,delt=1e-3,prms=par))
+  fun <- function(vec, par = prm) {
+    return(SIRCsim(run.time = 1, iState = vec, delt = 1e-3, prms = par))
   }
 
   trnp <- numeric(0)
-  for(i in angseq){
-    ini <- eq+c(rad*cos(i),rad*sin(i))
-    dFdS<-fun(ini+c(hach,0))-fun(ini)
-    dFdI<-fun(ini+c(0,hach))-fun(ini)
-    A <- matrix(c(dFdS,dFdI),nrow=2,ncol=2,byrow=FALSE)
+  for (i in angseq) {
+    ini <- eq + c(rad * cos(i), rad * sin(i))
+    dFdS <- fun(ini + c(hach, 0)) - fun(ini)
+    dFdI <- fun(ini + c(0, hach)) - fun(ini)
+    A <- matrix(c(dFdS, dFdI), nrow = 2, ncol = 2, byrow = FALSE)
     eigs <- eigen(A)$values
-    if(Arg(eigs[1]) != 0){
-      trnp <- c(trnp,2*pi*per/Arg(eigs[1]))
+    if (Arg(eigs[1]) != 0) {
+      trnp <- c(trnp, 2 * pi * per / Arg(eigs[1]))
     }
-    if(Re(eigs[1])>0 | Re(eigs[2])>0){
-    }
-    if(Arg(eigs[1]) == 0){
-      trnp <- c(trnp,0)
+    if (Re(eigs[1]) > 0 | Re(eigs[2]) > 0) {}
+    if (Arg(eigs[1]) == 0) {
+      trnp <- c(trnp, 0)
     }
   }
   # if(mean(trnp)!=0){
@@ -57,13 +67,10 @@ transP <- function(eq,per,prm,hach=1e-6,rad=1e-5,nsmp=10,trn.tol=1e-4){
   # }
 }
 
-bfdReader <- function(rowvec){
+bfdReader <- function(rowvec) {
   eq <- rowvec[2:3]
   per <- rowvec[8]
-  prm <- c(mu = 0.02,
-           gam = 24.33,
-           R0 = rowvec[4],
-           a = rowvec[5])
+  prm <- c(mu = 0.02, gam = 24.33, R0 = rowvec[4], a = rowvec[5])
   return(transP(eq, per, prm))
 }
 
@@ -99,16 +106,22 @@ stopCluster(cl)
 
 full_per1 <- bfd %>%
   filter(period == 1) %>%
-  left_join(per1 %>% select(S, I, R0, a, avgtrans, vartrans), by = c("S", "I", "R0", "a"))
+  left_join(
+    per1 %>% select(S, I, R0, a, avgtrans, vartrans),
+    by = c("S", "I", "R0", "a")
+  )
 
 full_per2 <- bfd %>%
   filter(period == 2) %>%
-  left_join(per2 %>% select(S, I, R0, a, avgtrans, vartrans), by = c("S", "I", "R0", "a"))
+  left_join(
+    per2 %>% select(S, I, R0, a, avgtrans, vartrans),
+    by = c("S", "I", "R0", "a")
+  )
 
 # transient_no_na1 <- full_per1 %>% filter(!is.na(transient))
 # transient_no_na2 <- full_per2 %>% filter(!is.na(transient))
 
-saveRDS(full_per1, "Transients/Transient1.rds")
-saveRDS(full_per2, "Transients/Transient2.rds")
+saveRDS(full_per1, "../ms_data/Transients/Transient1.rds")
+saveRDS(full_per2, "../ms_data/jTransients/Transient2.rds")
 # write.csv(transient_no_na1, "Transient_no_na1.csv")
 # write.csv(transient_no_na2, "Transient_no_na2.csv")

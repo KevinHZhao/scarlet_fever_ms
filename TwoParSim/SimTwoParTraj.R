@@ -82,7 +82,12 @@ for (chckpt in 0:9) {
     }
   saveRDS(
     bfd,
-    file = paste("bfd/sim_trajectory_", chckpt + 1, ".rds", sep = "")
+    file = paste(
+      "sim_trajectories/sim_trajectory_",
+      chckpt + 1,
+      ".rds",
+      sep = ""
+    )
   )
   print(paste(
     "sim_trajectory_",

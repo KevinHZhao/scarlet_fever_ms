@@ -1,9 +1,9 @@
 ## this script was made with chatgpt assistance
 
 # read file
-alphas <- read.csv("../alpha_p_data/alphas.csv")$alpha
-indices <- read.csv("../alpha_p_data/alphas.csv")$index
-phases <- readRDS("../../breaks/avg_beta_parms.Rds")$phases[indices]
+alphas <- read.csv("../../ms_data/alphas.csv")$alpha
+indices <- read.csv("../../ms_data/alphas.csv")$index
+phases <- readRDS("../../ms_data/avg_beta_parms.Rds")$phases[indices]
 # indices represents segments with interesting dynamics (a PD bif)
 
 # template function

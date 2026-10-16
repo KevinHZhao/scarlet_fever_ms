@@ -10,7 +10,7 @@ c1=0
 c2=0
 c3=0
 
-par mu=0.02, gamma=24.33, Rzero=7, amp=0.0574415283417085, phase=0.810430465356286
+par mu=0.02, gamma=24.33, Rzero=7, amp=0.0721137017398341, phase=0.14627398508778
 
 # MACPAN forcing
 
@@ -56,6 +56,6 @@ aux log10i=log10(i)
 
 ## STORAGE and DATA SAVING OPTIONS
 @ maxstor=2000000
-@ output=bruteforce_12_sin.dat
+@ output=bruteforce_14_sin.dat
 done
 
