@@ -180,10 +180,10 @@ simulator <-
 simulator$add$matrices(
   Sp = 1 / 6.5,
   Ip = 0.0002,
-  CFP_max = 0.025,
-  CFP_min = 0.01,
-  CFP_rate = 0.01,
-  CFP_mid = steps / 2,
+  CFP_max = 0.05,
+  CFP_min = 0.08,
+  CFP_rate = 0.0025,
+  CFP_mid = 3041,
   .mats_to_return = c("Si", "Ii", "beta_trend"),
   log_disp = 1,
   log_disp_cases = 1
@@ -259,12 +259,12 @@ simulator$replace$params(
   default = c(
     qlogis(1 / 6.5), ## From AndeMay91
     qlogis(0.0002),
-    qlogis(0.01),
-    qlogis(0.025),
+    qlogis(0.08),
+    qlogis(0.05),
     1,
     1,
-    log(steps / 2),
-    log(0.01), ## Set initial value of CFP logistic curve rate parameter to 0.01
+    log(3041),
+    log(0.025),
     0,
     rep(0, (2 * terms + 1) * numrbf)
   ),
@@ -317,8 +317,12 @@ simulator$print$matrix_dims()
 
 start_time <- Sys.time()
 
-simulator$optimize$nlminb(
-  control = list(eval.max = 1000000, iter.max = 1000000)
+# simulator$optimize$nlminb(
+#   control = list(eval.max = 1000000, iter.max = 1000000, trace = 10)
+# )
+simulator$optimize$optim(
+  method = "L-BFGS-B",
+  control = list(maxit = 100000, trace = 1)
 )
 
 params <- simulator$current$params_frame()

@@ -5,5 +5,3 @@
 5. Run `SimTwoParTraj.R`, which runs the simulations to get basins of attraction at the years in `simTrajectory.rds`.  This script is meant to be run on Compute Canada/other HPIC.  The script to send this script to SLURM is `SimTwoParTrajJob.sh`.  Takes roughly 2 hours to run.  This will generate the `bfd/sim_trajectory_*.rds` files (`*` is from 1 to 10).
 6. Run `find_transients_traj.R` which estimates the transient periods of the simulations that converged to period 1 attractors in `simTrajectory.rds`, takes roughly 2 hours.  This generates `Transients/Transient1_trajectory.rds`.
 7. Run `CreateYearlyTraj.R`, which combines the transient trajectory data with the simulated trajectory data to create `yearly_trajectory.rds`, containing all of the yearly attractor and transient data.
-
-This is how many of the `*.rds` files in the `Plots/Data` directory of the manuscript were generated.
