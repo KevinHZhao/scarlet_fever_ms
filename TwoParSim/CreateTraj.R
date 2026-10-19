@@ -130,4 +130,4 @@ trajectory <- trajectory %>%
     by = c("close_R0", "close_amp", "S0", "I0")
   )
 
-saveRDS(trajectory, file = "trajectory.rds")
+saveRDS(trajectory, file = "../ms_data/trajectory.rds")

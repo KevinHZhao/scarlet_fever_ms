@@ -33,12 +33,12 @@ full_series <- full_series %>%
     sqrt.transformed.macpan.deaths = sqrt(macpan.deaths / pop)
   )
 
-first_case_data <- which(!is.na(model_case_series))[[1]] # which time step we will have first case data
 model_case_series <- c(
   head(full_series$cases, n = front_pad),
   full_series$cases,
   tail(full_series$cases, n = end_pad)
 ) # cases series with padding at the end
+first_case_data <- which(!is.na(model_case_series))[[1]] # which time step we will have first case data
 no_missing_case_data <- (1:(steps + front_pad))[
   -which(is.na(
     model_case_series
