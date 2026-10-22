@@ -58,11 +58,12 @@ CFP_inits <- c(0.025, 0.01, 0.01, steps / 2)
 
 max_n <- 0
 
-for (n in 1:10) {  # Adjust range as needed
-    dir_name <- file.path(paste0("output_sensitivity_", n))
-    if (dir.exists(dir_name)) {
-        max_n <- n  # Update max_n if the directory exists
-    }
+for (n in 1:10) {
+  # Adjust range as needed
+  dir_name <- file.path(paste0("output_sensitivity_", n))
+  if (dir.exists(dir_name)) {
+    max_n <- n # Update max_n if the directory exists
+  }
 }
 
 iterations <- max_n + 1
@@ -71,7 +72,11 @@ print(paste0("Running sensitivity analysis iteration #", iterations, "."))
 if (dir.exists(paste0("output_sensitivity_", max_n))) {
   prev_all_res <- readRDS(paste0("output_sensitivity_", max_n, "/all_res.RDS"))
   best_ind <- which.min(sapply(prev_all_res, function(res) res$objective))
-  CFP_inits <- unlist(readRDS(paste0("output_sensitivity_", max_n, "/CFP_parms.RDS"))[best_ind, ])
+  CFP_inits <- unlist(readRDS(paste0(
+    "output_sensitivity_",
+    max_n,
+    "/CFP_parms.RDS"
+  ))[best_ind, ])
 }
 
 print(paste("Using inits:", paste(CFP_inits, collapse = " ")))
@@ -213,6 +218,7 @@ simulator$add$matrices(
   CFP_min = 0.01,
   CFP_rate = 0.01,
   CFP_mid = steps / 2,
+  case_reporting_rate = 0.9,
   .mats_to_return = c("Si", "Ii", "beta_trend"),
   log_disp = 1,
   log_disp_cases = 1
@@ -260,7 +266,7 @@ simulator$insert$expressions(
     sum(
       dnbinom(
         cases_obs,
-        clamp(infects),
+        clamp(infects * case_reporting_rate),
         exp(log_disp_cases)
       )
     ) +
@@ -291,7 +297,8 @@ simulator$add$transformations(
   Log("CFP_rate"),
   Log("rbf_beta_sd"),
   Log("rbf_fourrier_sd"),
-  Log("CFP_mid")
+  Log("CFP_mid"),
+  Logit("case_reporting_rate")
   # Logit("CFP_values")
 )
 
@@ -310,6 +317,7 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
       0,
       0,
       0,
+      qlogis(0.9),
       rep(0, (2 * terms + 1) * numrbf)
     ),
     mat = c(
@@ -324,6 +332,7 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
       "b0",
       "log_rbf_beta_sd",
       "log_rbf_fourrier_sd",
+      "logit_case_reporting_rate",
       rep("c", numrbf),
       rep("cos_coeffs_mat", terms * numrbf),
       rep("sin_coeffs_mat", terms * numrbf)
@@ -340,11 +349,13 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
       0,
       0,
       0,
+      0,
       rep(0, numrbf),
       rep(0:(terms - 1), each = numrbf),
       rep(0:(terms - 1), each = numrbf)
     ),
     row = c(
+      0,
       0,
       0,
       0,
@@ -437,7 +448,7 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
 }
 
 if (!dir.exists(paste0("output_sensitivity_", iterations))) {
-    dir.create(paste0("output_sensitivity_", iterations), recursive = TRUE)
+  dir.create(paste0("output_sensitivity_", iterations), recursive = TRUE)
 }
 
 all_res <- mclapply(
@@ -448,9 +459,23 @@ all_res <- mclapply(
   mc.cores = 81
 )
 
-saveRDS(all_res, file = paste0("output_sensitivity_", iterations, "/all_res.RDS"))
-saveRDS(CFP_parms, file = paste0("output_sensitivity_", iterations, "/CFP_parms.RDS"))
+saveRDS(
+  all_res,
+  file = paste0("output_sensitivity_", iterations, "/all_res.RDS")
+)
+saveRDS(
+  CFP_parms,
+  file = paste0("output_sensitivity_", iterations, "/CFP_parms.RDS")
+)
 
-print("Summary of objective function values for checking if initial conditions are not sensitive:")
+print(
+  "Summary of objective function values for checking if initial conditions are not sensitive:"
+)
 summary(sapply(all_res, function(res) res$objective))
-print(paste("Minimum objective function with initial conditions:", paste(CFP_parms[which.min(sapply(all_res, function(res) res$objective)),], collapse = " ")))
+print(paste(
+  "Minimum objective function with initial conditions:",
+  paste(
+    CFP_parms[which.min(sapply(all_res, function(res) res$objective)), ],
+    collapse = " "
+  )
+))

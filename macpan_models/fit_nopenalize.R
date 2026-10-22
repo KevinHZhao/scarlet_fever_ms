@@ -184,6 +184,7 @@ simulator$add$matrices(
   CFP_min = 0.08,
   CFP_rate = 0.0025,
   CFP_mid = 3041,
+  case_reporting_rate = 0.9,
   .mats_to_return = c("Si", "Ii", "beta_trend"),
   log_disp = 1,
   log_disp_cases = 1
@@ -231,7 +232,7 @@ simulator$insert$expressions(
     sum(
       dnbinom(
         cases_obs,
-        clamp(infects),
+        clamp(infects * case_reporting_rate),
         exp(log_disp_cases)
       )
     ),
@@ -251,7 +252,8 @@ simulator$add$transformations(
   Logit("CFP_min"),
   Logit("CFP_max"),
   Log("CFP_rate"),
-  Log("CFP_mid")
+  Log("CFP_mid"),
+  Logit("case_reporting_rate")
   # Logit("CFP_values")
 )
 
@@ -266,6 +268,7 @@ simulator$replace$params(
     log(3041),
     log(0.025),
     0,
+    qlogis(0.9),
     rep(0, (2 * terms + 1) * numrbf)
   ),
   mat = c(
@@ -278,6 +281,7 @@ simulator$replace$params(
     "log_CFP_mid",
     "log_CFP_rate",
     "b0",
+    "logit_case_reporting_rate",
     rep("c", numrbf),
     rep("cos_coeffs_mat", terms * numrbf),
     rep("sin_coeffs_mat", terms * numrbf)
@@ -292,11 +296,13 @@ simulator$replace$params(
     0,
     0,
     0,
+    0,
     rep(0, numrbf),
     rep(0:(terms - 1), each = numrbf),
     rep(0:(terms - 1), each = numrbf)
   ),
   row = c(
+    0,
     0,
     0,
     0,

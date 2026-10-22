@@ -184,6 +184,7 @@ simulator$add$matrices(
   CFP_min = 0.01,
   CFP_rate = 0.01,
   CFP_mid = steps / 2,
+  case_reporting_rate = 0.9,
   .mats_to_return = c("Si", "Ii", "beta_trend"),
   log_disp = 1,
   log_disp_cases = 1
@@ -231,7 +232,7 @@ simulator$insert$expressions(
     sum(
       dnbinom(
         cases_obs,
-        clamp(infects),
+        clamp(infects * case_reporting_rate),
         exp(log_disp_cases)
       )
     ) +
@@ -262,7 +263,8 @@ simulator$add$transformations(
   Log("CFP_rate"),
   Log("rbf_beta_sd"),
   Log("rbf_fourrier_sd"),
-  Log("CFP_mid")
+  Log("CFP_mid"),
+  Logit("case_reporting_rate")
   # Logit("CFP_values")
 )
 
@@ -279,6 +281,7 @@ simulator$replace$params(
     0,
     0,
     0,
+    qlogis(0.9),
     rep(0, (2 * terms + 1) * numrbf)
   ),
   mat = c(
@@ -293,11 +296,13 @@ simulator$replace$params(
     "b0",
     "log_rbf_beta_sd",
     "log_rbf_fourrier_sd",
+    "logit_case_reporting_rate",
     rep("c", numrbf),
     rep("cos_coeffs_mat", terms * numrbf),
     rep("sin_coeffs_mat", terms * numrbf)
   ),
   col = c(
+    0,
     0,
     0,
     0,
@@ -325,6 +330,7 @@ simulator$replace$params(
     0,
     0,
     0,
+    0,
     0:(numrbf - 1),
     rep(0:(numrbf - 1), terms),
     rep(0:(numrbf - 1), terms)
@@ -338,7 +344,9 @@ start_time <- Sys.time()
 
 simulator$optimize$nlminb(
   control = list(
-    maxit = 10000000
+    eval.max = 100000000,
+    maxit = 10000000,
+    trace = 10
   )
 )
 
