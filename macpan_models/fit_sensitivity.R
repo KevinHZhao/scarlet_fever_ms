@@ -54,7 +54,7 @@ first_case_data <- which(!is.na(model_case_series))[[1]] # which time step we wi
 
 missing_case_data <- which(is.na(model_case_series))
 
-CFP_inits <- c(0.025, 0.01, 0.01, steps / 2)
+CFP_inits <- c(0.025, 0.01, 0.01, steps / 2, 0.2) # last value represents the case reporting rate
 
 max_n <- 0
 
@@ -85,7 +85,8 @@ CFP_max <- c(0.5, 1, 2) * CFP_inits[1]
 CFP_min <- c(0.5, 1, 2) * CFP_inits[2]
 CFP_rate <- c(0.5, 1, 2) * CFP_inits[3]
 CFP_mid <- c(0.9, 1, 1.1) * CFP_inits[4]
-CFP_parms <- expand_grid(CFP_max, CFP_min, CFP_rate, CFP_mid)
+case_reporting_rate <- c(0.5, 1, 2) * CFP_inits[5]
+CFP_parms <- expand_grid(CFP_max, CFP_min, CFP_rate, CFP_mid, case_reporting_rate)
 
 numrbf <- 64
 terms <- 3
@@ -218,7 +219,7 @@ simulator$add$matrices(
   CFP_min = 0.01,
   CFP_rate = 0.01,
   CFP_mid = steps / 2,
-  case_reporting_rate = 0.9,
+  case_reporting_rate = 0.2,
   .mats_to_return = c("Si", "Ii", "beta_trend"),
   log_disp = 1,
   log_disp_cases = 1
@@ -303,7 +304,7 @@ simulator$add$transformations(
 )
 
 
-simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
+simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid, case_reporting_rate) {
   simulator$replace$params(
     default = c(
       qlogis(1 / 6.5), ## From AndeMay91
@@ -317,7 +318,7 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
       0,
       0,
       0,
-      qlogis(0.9),
+      qlogis(case_reporting_rate),
       rep(0, (2 * terms + 1) * numrbf)
     ),
     mat = c(
@@ -399,6 +400,8 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
       CFP_mid,
       "_",
       CFP_rate,
+      "_",
+      case_reporting_rate,
       ".csv"
     )
   )
@@ -415,6 +418,8 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
       CFP_mid,
       "_",
       CFP_rate,
+      "_",
+      case_reporting_rate,
       ".csv"
     )
   )
@@ -431,6 +436,8 @@ simulator_fun <- function(CFP_max, CFP_min, CFP_rate, CFP_mid) {
       CFP_mid,
       "_",
       CFP_rate,
+      "_",
+      case_reporting_rate,
       ".csv"
     )
   )
@@ -454,7 +461,7 @@ if (!dir.exists(paste0("output_sensitivity_", iterations))) {
 all_res <- mclapply(
   split(CFP_parms, seq_len(nrow(CFP_parms))),
   function(row) {
-    simulator_fun(row$CFP_max, row$CFP_min, row$CFP_rate, row$CFP_mid)
+    simulator_fun(row$CFP_max, row$CFP_min, row$CFP_rate, row$CFP_mid, row$case_reporting_rate)
   },
   mc.cores = 81
 )
