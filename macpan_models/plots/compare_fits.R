@@ -31,7 +31,7 @@ CFP_parms <- readRDS(paste0("../output_sensitivity_", max_n, "/CFP_parms.RDS"))
 
 # Macpan parameter simplifying --------------------------------------------
 
-read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
+read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid, icase_reporting_rate) {
   mac_parms <- read.csv(paste0(
     "../output_sensitivity_",
     max_n,
@@ -43,6 +43,8 @@ read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
     iCFP_mid,
     "_",
     iCFP_rate,
+    "_",
+    icase_reporting_rate,
     ".csv"
   ))
   CFP_min <- mac_parms %>%
@@ -98,6 +100,8 @@ read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
     iCFP_mid,
     "_",
     iCFP_rate,
+    "_",
+    icase_reporting_rate,
     ".csv"
   ))
   mac_results <- read.csv(paste0(
@@ -111,6 +115,8 @@ read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
     iCFP_mid,
     "_",
     iCFP_rate,
+    "_",
+    icase_reporting_rate,
     ".csv"
   ))
   mac_muS <- mac_results %>% filter(matrix == "mu_S") %>% pull(value)
@@ -127,7 +133,7 @@ read_mp <- function(iCFP_max, iCFP_min, iCFP_rate, iCFP_mid) {
 full_df <- mclapply(
   split(CFP_parms, seq_len(nrow(CFP_parms))),
   function(row) {
-    read_mp(row$CFP_max, row$CFP_min, row$CFP_rate, row$CFP_mid)
+    read_mp(row$CFP_max, row$CFP_min, row$CFP_rate, row$CFP_mid, row$case_reporting_rate)
   },
   mc.cores = 8
 ) %>%

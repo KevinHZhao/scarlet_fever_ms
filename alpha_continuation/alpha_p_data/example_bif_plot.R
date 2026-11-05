@@ -3,7 +3,7 @@ theme_set(theme_bw())
 
 bif_dat <- list()
 
-indices <- c(1:9, 13, 14)
+indices <- c(1:9, 13, 14, 15)
 for (i in indices) {
   bif_dat[[i]] <- read.table(paste0("alpha_p_", i, ".dat"))[, 1:2]
 }
